@@ -137,20 +137,16 @@ void JokerWindow::setupSyncProtocol()
 			clock = _sonySlave.clock();
 			ui->videoStripView->setSony(&_sonySlave);
 		}
-		else {
-			type = Synchronizer::NoSync;
+		else
 			QMessageBox::critical(this, "", "Unable to connect to USB422v module");
-		}
 		break;
 	case Synchronizer::LTC:
 		{
 			QString input = _settings->ltcInputDevice();
 			if(_ltcReader.init(input))
 				clock = _ltcReader.clock();
-			else {
+			else
 				QMessageBox::critical(this, "", "Unable to open " + input);
-				type = Synchronizer::NoSync;
-			}
 			break;
 		}
 	case Synchronizer::NoSync:
