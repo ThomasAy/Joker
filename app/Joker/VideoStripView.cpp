@@ -50,7 +50,6 @@ bool VideoStripView::init()
 	_currentPeopleName.setColor(QColor(128, 128, 128));
 
 	connect(this, SIGNAL(beforePaint(PhTimeScale)), _strip.clock(), SLOT(tick(PhTimeScale)));
-
 	_logo.setFilename(QCoreApplication::applicationDirPath() + PATH_TO_RESSOURCES + "/phonations.png");
 	_logo.init();
 
@@ -86,8 +85,12 @@ void VideoStripView::paint()
 	}
 
 	float stripHeightRatio = 0.25f;
-	if(_settings)
-		stripHeightRatio = _settings->stripHeight();
+	if(_settings) {
+		if(_settings->hideStrip())
+			stripHeightRatio = 0;
+		else
+			stripHeightRatio = _settings->stripHeight();
+	}
 
 	int stripHeight = (this->height() - y) * stripHeightRatio;
 	int videoHeight = this->height() - y - stripHeight;

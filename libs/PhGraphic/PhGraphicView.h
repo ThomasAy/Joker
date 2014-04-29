@@ -61,6 +61,7 @@ public:
 	 * @param info A string
 	 */
 	void addInfo(QString info);
+
 signals:
 	/**
 	 * @brief emit a signal just before the paint
@@ -98,6 +99,14 @@ protected:
 	 */
 	void paintGL();
 
+	/**
+	 * @brief The screen frequency
+	 */
+	int _screenFrequency;
+
+private slots:
+	void onRefresh();
+
 private:
 	bool _initialized;
 	PhGraphicSettings *_settings;
@@ -105,13 +114,12 @@ private:
 	 * @brief t_Timer
 	 * used to draw
 	 */
-	QTimer *t_Timer;
+	QTimer *_refreshTimer;
 	PhTickCounter _frameTickCounter;
-	int _screenFrequency;
 	QStringList _infos;
 	PhFont _infoFont;
 	QTime _dropTimer;
-	int _dropDetected, _lastDropElapsed, _maxRefreshRate, _maxPaintDuration;
+	int _dropDetected, _maxRefreshRate, _maxPaintDuration, _lastUpdateDuration, _maxUpdateDuration;
 };
 
 #endif // PHGRAPHICVIEW

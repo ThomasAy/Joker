@@ -29,7 +29,8 @@ JokerWindow::JokerWindow(JokerSettings *settings) :
 	_sonySlave(PhTimeCodeType25, settings),
 	_mediaPanelAnimation(&_mediaPanel, "windowOpacity"),
 	_needToSave(false),
-	_firstDoc(true)
+	_firstDoc(true),
+	_numberOfDraw(0)
 {
 	// Setting up UI
 	ui->setupUi(this);
@@ -102,6 +103,8 @@ JokerWindow::JokerWindow(JokerSettings *settings) :
 
 	ui->actionShow_ruler->setChecked(_settings->displayRuler());
 
+	ui->actionHide_the_rythmo->setChecked(_settings->hideStrip());
+
 	if(!_settings->exitedNormaly())
 		on_actionSend_feedback_triggered();
 
@@ -113,6 +116,8 @@ JokerWindow::JokerWindow(JokerSettings *settings) :
 	// Trigger a timer that will fade off the media panel after 3 seconds
 	this->connect(&_mediaPanelTimer, SIGNAL(timeout()), this, SLOT(fadeOutMediaPanel()));
 	_mediaPanelTimer.start(3000);
+
+	this->connect(ui->videoStripView, SIGNAL(beforePaint(PhTimeScale)), this, SLOT(timeCounter(PhTimeScale)));
 }
 
 JokerWindow::~JokerWindow()
@@ -442,9 +447,21 @@ bool JokerWindow::openVideoFile(QString videoFile)
 	return false;
 }
 
+void JokerWindow::timeCounter(PhTimeScale frequency)
+{
+	if(_strip->clock()->rate() == 1 && (Synchronizer::SyncType)_settings->synchroProtocol() != Synchronizer::NoSync) {
+		_numberOfDraw++;
+		if(_numberOfDraw >= frequency) {
+			_numberOfDraw = 0;
+			_settings->setTimePlayed(_settings->timePlayed() + 1);
+		}
+	}
+}
+
 void JokerWindow::on_actionChange_timestamp_triggered()
 {
 	hideMediaPanel();
+	_strip->clock()->setRate(0);
 	PhFrame frame;
 	if(_synchronizer.videoClock()->frame() < _videoEngine->firstFrame())
 		frame = _videoEngine->firstFrame();
@@ -746,4 +763,9 @@ void JokerWindow::on_actionDeinterlace_video_triggered(bool checked)
 		_doc->setVideoDeinterlace(checked);
 		_needToSave = true;
 	}
+}
+
+void JokerWindow::on_actionHide_the_rythmo_triggered(bool checked)
+{
+	_settings->setHideStrip(checked);
 }

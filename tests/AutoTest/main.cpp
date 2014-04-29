@@ -9,9 +9,12 @@
 #include "TimeCodeEditTest.h"
 #include "LockableSpinBoxTest.h"
 #include "WindowTest.h"
+#include "GraphicStripTest.h"
 
 int main(int argc, char *argv[])
 {
+	QApplication a(argc, argv);
+
 	PHDEBUG << "AutoTest";
 
 	bool testAll = (argc < 2); // if no argument, test all
@@ -20,6 +23,7 @@ int main(int argc, char *argv[])
 	bool testDoc = testAll;
 	bool testSony = testAll;
 	bool testUi = testAll;
+	bool testGraphicStrip = testAll;
 	bool quiet = false;
 
 	bool success = true;
@@ -35,6 +39,8 @@ int main(int argc, char *argv[])
 			testSony = true;
 		else if(strcmp(argv[i], "ui") == 0)
 			testUi = true;
+		else if(strcasecmp(argv[i], "graphicstrip") == 0)
+			testGraphicStrip = true;
 		else if(strcmp(argv[i], "quiet") == 0)
 			quiet = true;
 	}
@@ -51,15 +57,10 @@ int main(int argc, char *argv[])
 		success &= !QTest::qExec(&settingsTest);
 	}
 
-	int docArgC = 3;
-	char** docArgV = new char*[docArgC];
-	docArgV[0] = "AutoTest";
-	docArgV[1] = "-maxwarnings";
-	docArgV[2] = "0";
 	if(testDoc) {
 		// Testing PhStripDoc
 		StripDocTest docTest;
-		success &= !QTest::qExec(&docTest, docArgC, docArgV);
+		success &= !QTest::qExec(&docTest);
 	}
 
 	if(testSony) {
@@ -69,7 +70,6 @@ int main(int argc, char *argv[])
 	}
 
 	if(testUi) {
-		QApplication a(argc, argv);
 		// Testing PhTimeCodeEdit
 		TimeCodeEditTest tcEditTest;
 		success &= !QTest::qExec(&tcEditTest);
@@ -79,6 +79,11 @@ int main(int argc, char *argv[])
 
 		WindowTest windowTest;
 		success &= !QTest::qExec(&windowTest);
+	}
+
+	if(testGraphicStrip) {
+		GraphicStripTest viewTest;
+		success &= !QTest::qExec(&viewTest);
 	}
 
 	QThread::msleep(500);

@@ -285,20 +285,39 @@ bool PhVideoEngine::goToFrame(PhFrame frame)
 							if(_deinterlace)
 								frameHeight = _videoFrame->height / 2;
 						}
-#warning /// @todo Use RGB pixel format
+						// As the following formats are deprecated (see https://libav.org/doxygen/master/pixfmt_8h.html#a9a8e335cf3be472042bc9f0cf80cd4c5)
+						// we replace its with the new ones recommended by LibAv
+						// in order to get ride of the warnings
+						AVPixelFormat pixFormat;
+						switch (_videoStream->codec->pix_fmt) {
+						case AV_PIX_FMT_YUVJ420P:
+							pixFormat = AV_PIX_FMT_YUV420P;
+							break;
+						case AV_PIX_FMT_YUVJ422P:
+							pixFormat = AV_PIX_FMT_YUV422P;
+							break;
+						case AV_PIX_FMT_YUVJ444P:
+							pixFormat = AV_PIX_FMT_YUV444P;
+							break;
+						case AV_PIX_FMT_YUVJ440P:
+							pixFormat = AV_PIX_FMT_YUV440P;
+						default:
+							pixFormat = _videoStream->codec->pix_fmt;
+							break;
+						}
 						_pSwsCtx = sws_getCachedContext(_pSwsCtx, _videoFrame->width, _videoStream->codec->height,
-						                                _videoStream->codec->pix_fmt, _videoStream->codec->width, frameHeight,
-						                                AV_PIX_FMT_RGBA, SWS_POINT, NULL, NULL, NULL);
+						                                pixFormat, _videoStream->codec->width, frameHeight,
+						                                AV_PIX_FMT_RGB24, SWS_POINT, NULL, NULL, NULL);
 
 						if(_rgb == NULL)
-							_rgb = new uint8_t[_videoFrame->width * frameHeight * 4];
-						int linesize = _videoFrame->width * 4;
+							_rgb = new uint8_t[_videoFrame->width * frameHeight * 3];
+						int linesize = _videoFrame->width *3;
 						if (0 <= sws_scale(_pSwsCtx, (const uint8_t * const *) _videoFrame->data,
 						                   _videoFrame->linesize, 0, _videoStream->codec->height, &_rgb,
 						                   &linesize)) {
 							scaleElapsed = _testTimer.elapsed();
 
-							videoRect.createTextureFromARGBBuffer(_rgb, _videoFrame->width, frameHeight);
+							videoRect.createTextureFromRGBBuffer(_rgb, _videoFrame->width, frameHeight);
 
 							textureElapsed = _testTimer.elapsed();
 

@@ -12,7 +12,7 @@ TEMPLATE = app
 QT += core gui
 
 # The application version
-VERSION = 1.1.9
+VERSION = 1.1.10
 
 # Define the preprocessor macro to get the application version in our application.
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
@@ -82,6 +82,8 @@ TRANSLATIONS =	fr_FR.ts \
 				en_US.ts \
 
 QMAKE_POST_LINK += lrelease $${_PRO_FILE_PWD_}/fr_FR.ts -qm $${RESOURCES_PATH}/fr_FR.qm $${CS}
+QMAKE_POST_LINK += lrelease $${_PRO_FILE_PWD_}/en_US.ts -qm $${RESOURCES_PATH}/en_US.qm $${CS}
+
 QMAKE_POST_LINK += $${QMAKE_COPY} $$shell_path($${JOKER_ROOT}/data/img/joker.png) $$shell_path($${RESOURCES_PATH}/) $${CS}
 
 PH_DEPLOY_LOCATION = $$(JOKER_RELEASE_PATH)
