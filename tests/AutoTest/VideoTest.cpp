@@ -48,13 +48,13 @@ void VideoTest::goToTest01() {
 	QTest::qWait(WAIT_TIME);
 	QVERIFY(QImage(_view.grabFrameBuffer()) == QImage("interlace_020.bmp"));
 
-	_videoEngine.clock()->setFrame(PhTimeCode::frameFromString("00:00:04:00", PhTimeCodeType25));
+	_videoEngine.clock()->setFrame(100);
 
 
 	QTest::qWait(WAIT_TIME);
 	QVERIFY(QImage(_view.grabFrameBuffer()) == QImage("interlace_100.bmp"));
 
-	_videoEngine.clock()->setFrame(PhTimeCode::frameFromString("00:00:03:00", PhTimeCodeType25));
+	_videoEngine.clock()->setFrame(75);
 
 
 	QTest::qWait(WAIT_TIME);
@@ -64,18 +64,6 @@ void VideoTest::goToTest01() {
 }
 
 void VideoTest::goToTest02() {
-	qDebug() << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$";
-	qDebug() << "Init graphic _view";
-
-
-	qDebug() << "Set settings of video engine";
-
-
-	qDebug() << "show the GV";
-	_view.show();
-
-	qDebug() << "open the files";
-
 	QVERIFY(_videoEngine.open("interlace_%03d.bmp") );
 
 	qDebug() << "set the frame";
@@ -109,7 +97,6 @@ void VideoTest::goToTest02() {
 
 // This "stress test" cue the video engine at different random location
 void VideoTest::goToTest03() {
-	qDebug() << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$";
 
 	//_videoEngine.setSettings(&_settings);
 	_view.show();
@@ -138,8 +125,6 @@ void VideoTest::goToTest03() {
 }
 
 void VideoTest::playTest() {
-	qDebug() << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$";
-	//_videoEngine.setSettings(&_settings);
 
 	_view.show();
 
@@ -185,11 +170,6 @@ void VideoTest::playTest() {
 }
 
 void VideoTest::deinterlaceTest() {
-	qDebug() << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$";
-
-
-	_view.show();
-
 	//Open the video file in interlaced mode
 	_videoEngine.open("interlace_%03d.bmp");
 

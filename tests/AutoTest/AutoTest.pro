@@ -42,10 +42,8 @@ HEADERS += \
 	GraphicTextTest.h \
 	GraphicStripTestSettings.h \
 	GraphicStripTest.h \
-    GraphicTextTest.h \
-    VideoTest.h \
-	VideoTestSettings.h \
-    GraphicStripTestSettings.h
+	VideoTest.h \
+	VideoTestSettings.h
 
 SOURCES += main.cpp \
 	ClockTest.cpp \

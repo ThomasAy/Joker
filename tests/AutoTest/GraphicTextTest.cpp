@@ -57,7 +57,7 @@ void GraphicTextTest::fontTest() {
 
 	            rect.setY(200);
 	            rect.draw();
-	            QString specials("à â ç è é ê î ô ù û");
+	            QString specials("à â ç è é ê \nî ô ù û");
 	            PhGraphicText text3(&font, specials);
 	            text3.setRect(0, 200, textWidth, textHeight);
 	            text3.setColor(Qt::black);
@@ -106,31 +106,4 @@ void GraphicTextTest::computeMaxFontSizeTest()
 	QCOMPARE(PhFont::computeMaxFontSize("SWENSON.ttf"), 124);
 	QCOMPARE(PhFont::computeMaxFontSize("Bedizen.ttf"), 97);
 	QCOMPARE(PhFont::computeMaxFontSize("weblysleekuil.ttf"), 94);
-}
-
-void GraphicTextTest::setContentTest()
-{
-	PhFont font;
-	font.setFontFile("Arial.ttf");
-
-	PhGraphicText t(&font);
-
-	t.setContent("Hello");
-	QVERIFY(t.getContent() == "Hello");
-}
-
-void GraphicTextTest::setFontTest()
-{
-	PhFont font;
-	font.setFontFile("Arial.ttf");
-
-	PhFont font2;
-	font2.setFontFile("test.ttf");
-
-	PhGraphicText t(&font);
-
-	t.setFont(&font2);
-
-	QVERIFY(t.getFont() == &font2);
-
 }

@@ -18,9 +18,6 @@ private slots:
 	void fontTest();
 	void fontTest_data();
 	void computeMaxFontSizeTest();
-	void setContentTest();
-	void setFontTest();
-
 };
 
 #endif // GRAPHICTEXTTEST_H

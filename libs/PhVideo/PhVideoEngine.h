@@ -87,11 +87,6 @@ public:
 	QString codecName();
 
 	/**
-	 * @brief Pass the settings to the engine
-	 * @param settings The settings
-	 */
-	void setSettings(PhVideoSettings *settings);
-	/**
 	 * @brief Set first frame
 	 * @param frame the new first frame
 	 */
@@ -151,6 +146,11 @@ public:
 	 */
 	int bufferOccupation();
 
+	/**
+	 * @brief Set the settings
+	 * @param settings
+	 */
+	void setSettings(PhVideoSettings *settings);
 public slots:
 	/**
 	 * @brief errorString
