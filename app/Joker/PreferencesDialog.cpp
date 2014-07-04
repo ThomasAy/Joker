@@ -109,7 +109,7 @@ PreferencesDialog::PreferencesDialog(JokerSettings *settings, QWidget *parent) :
 		showParamLTC(false);
 		showParamSony(false);
 	}
-	
+
 //	ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Ok"));
 //	ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
