@@ -153,7 +153,6 @@ bool PhGraphicTexturedRect::createTextureFromRGBBuffer(void *data, int width, in
 
 bool PhGraphicTexturedRect::createTextureFromYUVBuffer(void *data, int width, int height)
 {
-
 	glEnable( GL_TEXTURE_2D );
 	// Have OpenGL generate a texture object handle for us
 	glGenTextures( 1, &_texture );
