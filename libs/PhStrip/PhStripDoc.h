@@ -35,7 +35,7 @@ public:
 	/**
 	 * @brief PhStripDoc constructor
 	 */
-	explicit PhStripDoc(QObject *parent = 0);
+	PhStripDoc();
 
 	/**
 	 * @brief The name of the application that generated the document
@@ -342,9 +342,16 @@ public:
 	 * @return time A time value
 	 */
 	PhTime lastTime();
-	/*!
-	 * \brief Get the force ratio information
-	 * \return if the ratio is forced or not
+
+	/**
+	 * @brief Set the force 16/9 ratio status
+	 * @param forceRatio A bool value
+	 */
+	void setForceRatio169(bool forceRatio);
+
+	/**
+	 * @brief Get the force 16/9ratio status
+	 * @return True if the ratio is forced, false otherwise
 	 */
 	bool forceRatio169() const;
 
@@ -375,6 +382,17 @@ public:
 	 * @param people the new poeple
 	 */
 	void addPeople(PhPeople * people);
+
+	/**
+	 * @brief modified
+	 * @return true if the PhStripDoc have been modified, false otherwise
+	 */
+	bool modified() const;
+	/**
+	 * @brief setModified
+	 * @param modified
+	 */
+	void setModified(bool modified);
 
 signals:
 	/**
@@ -472,6 +490,7 @@ private:
 	MosTag readMosTag(QFile &f, int level, QString name);
 	bool readMosTrack(QFile &f, QMap<int, PhPeople*> peopleMap, QMap<int, int> peopleTrackMap, int blocLevel, int textLevel, int detectLevel, int labelLevel, int level, int internLevel);
 	bool _videoForceRatio169;
+	bool _modified;
 };
 
 #endif // PHSTRIPDOC_H

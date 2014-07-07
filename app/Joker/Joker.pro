@@ -12,7 +12,7 @@ TEMPLATE = app
 QT += core gui
 
 # The application version
-VERSION = 1.1.10
+VERSION = 1.1.13
 
 # Define the preprocessor macro to get the application version in our application.
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
@@ -32,29 +32,33 @@ include(../../libs/PhSync/PhSync.pri)
 #Main app
 SOURCES += main.cpp \
 	JokerWindow.cpp \
-	VideoStripView.cpp \
 	Synchronizer.cpp \
-    AboutDialog.cpp \
-    PreferencesDialog.cpp \
+	AboutDialog.cpp \
+	PreferencesDialog.cpp \
 	PropertyDialog.cpp \
-    PeopleDialog.cpp
+	PeopleDialog.cpp \
+	PeopleEditionDialog.cpp \
+    RulerSpaceDialog.cpp
 
 HEADERS += \
-    JokerWindow.h \
-	VideoStripView.h \
+	JokerWindow.h \
 	Synchronizer.h \
-    AboutDialog.h \
-    PreferencesDialog.h \
+	AboutDialog.h \
+	PreferencesDialog.h \
 	PropertyDialog.h \
-    PeopleDialog.h \
-    JokerSettings.h
+	PeopleDialog.h \
+	JokerSettings.h \
+	PeopleEditionDialog.h \
+    RulerSpaceDialog.h
 
 FORMS += \
-    JokerWindow.ui \
-    AboutDialog.ui \
-    PreferencesDialog.ui \
+	JokerWindow.ui \
+	AboutDialog.ui \
+	PreferencesDialog.ui \
 	PropertyDialog.ui \
-	PeopleDialog.ui
+	PeopleDialog.ui \
+	PeopleEditionDialog.ui \
+    RulerSpaceDialog.ui
 
 unix {
 	QMAKE_POST_LINK += sed -E -i \"\" -e \"s/\(PROJECT_NUMBER[ ]*=[ ]*\)[^ ]*/\1$$VERSION/\" \"$${JOKER_ROOT}/.doxygen\";
@@ -76,6 +80,10 @@ win32 {
 QMAKE_POST_LINK += $${QMAKE_COPY} $$shell_path($${JOKER_ROOT}/data/img/joker.png) $${RESOURCES_PATH} $${CS}
 QMAKE_POST_LINK += $${QMAKE_COPY} $$shell_path($${JOKER_ROOT}/data/img/phonations.png) $${RESOURCES_PATH} $${CS}
 QMAKE_POST_LINK += $${QMAKE_COPY} $$shell_path($${JOKER_ROOT}/data/img/phonationsBlack.png) $${RESOURCES_PATH} $${CS}
+QMAKE_POST_LINK += $${QMAKE_COPY} $$shell_path($${JOKER_ROOT}/data/img/motif-240.png) $${RESOURCES_PATH} $${CS}
+QMAKE_POST_LINK += $${QMAKE_COPY} $$shell_path($${JOKER_ROOT}/data/img/motif-240_black.png) $${RESOURCES_PATH} $${CS}
+QMAKE_POST_LINK += $${QMAKE_COPY} $$shell_path($${JOKER_ROOT}/data/fonts/SWENSON.TTF) $${RESOURCES_PATH} $${CS}
+QMAKE_POST_LINK += $${QMAKE_COPY} $$shell_path($${JOKER_ROOT}/data/fonts/HelveticaCYPlain.ttf) $${RESOURCES_PATH} $${CS}
 
 
 TRANSLATIONS =	fr_FR.ts \
@@ -84,12 +92,10 @@ TRANSLATIONS =	fr_FR.ts \
 QMAKE_POST_LINK += lrelease $${_PRO_FILE_PWD_}/fr_FR.ts -qm $${RESOURCES_PATH}/fr_FR.qm $${CS}
 QMAKE_POST_LINK += lrelease $${_PRO_FILE_PWD_}/en_US.ts -qm $${RESOURCES_PATH}/en_US.qm $${CS}
 
-QMAKE_POST_LINK += $${QMAKE_COPY} $$shell_path($${JOKER_ROOT}/data/img/joker.png) $$shell_path($${RESOURCES_PATH}/) $${CS}
-
 PH_DEPLOY_LOCATION = $$(JOKER_RELEASE_PATH)
 include(../../common/deploy.pri)
 
 cache()
 
 OTHER_FILES += \
-    JokerSetup.iss
+	JokerSetup.iss

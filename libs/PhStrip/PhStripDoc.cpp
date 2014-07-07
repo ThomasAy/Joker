@@ -14,8 +14,7 @@
 #include "PhTools/PhFileTool.h"
 #include "PhStripDoc.h"
 
-PhStripDoc::PhStripDoc(QObject *parent) :
-	QObject(parent)
+PhStripDoc::PhStripDoc()
 {
 	reset();
 }
@@ -491,6 +490,16 @@ bool PhStripDoc::readMosTrack(QFile &f, QMap<int, PhPeople *> peopleMap, QMap<in
 
 	return true;
 }
+bool PhStripDoc::modified() const
+{
+	return _modified;
+}
+
+void PhStripDoc::setModified(bool modified)
+{
+	_modified = modified;
+}
+
 
 bool PhStripDoc::importMosFile(const QString &fileName)
 {
@@ -795,6 +804,16 @@ bool PhStripDoc::openStripFile(const QString &fileName)
 			QDomElement state = stripDocument.elementsByTagName("state").at(0).toElement();
 			_lastTime = PhTimeCode::timeFromString(state.attribute("lastTimeCode"), _tcType);
 		}
+
+		if(stripDocument.elementsByTagName("peoples").count()) {
+			QDomNodeList chars = stripDocument.elementsByTagName("peoples").at(0).childNodes();
+			for(int i = 0; i < chars.count(); i++) {
+				QString color = chars.at(i).toElement().attribute("color");
+				QString name = chars.at(i).toElement().attribute("name");
+				peopleByName(name)->setColor(color);
+			}
+		}
+
 	}
 	return result;
 }
@@ -856,6 +875,20 @@ bool PhStripDoc::saveStripFile(const QString &fileName, const QString &lastTC)
 				xmlWriter->writeEndElement();
 			}
 			xmlWriter->writeEndElement();
+
+			xmlWriter->writeStartElement("peoples");
+			{
+				foreach(PhPeople * ppl, peoples())
+				{
+					xmlWriter->writeStartElement("people");
+					xmlWriter->writeAttribute("name", ppl->name());
+					xmlWriter->writeAttribute("color", ppl->color());
+					xmlWriter->writeEndElement();
+
+				}
+			}
+			xmlWriter->writeEndElement();
+
 		}
 		xmlWriter->writeEndElement();
 
@@ -971,11 +1004,6 @@ void PhStripDoc::addPeople(PhPeople *people)
 	PHDEBUG << "Added a people";
 	emit changed();
 
-}
-
-bool PhStripDoc::forceRatio169() const
-{
-	return _videoForceRatio169;
 }
 
 PhPeople *PhStripDoc::peopleByName(QString name)
@@ -1231,6 +1259,16 @@ PhTime PhStripDoc::videoFrameIn()
 PhTime PhStripDoc::lastTime()
 {
 	return _lastTime;
+}
+
+void PhStripDoc::setForceRatio169(bool forceRatio)
+{
+	_videoForceRatio169 = forceRatio;
+}
+
+bool PhStripDoc::forceRatio169() const
+{
+	return _videoForceRatio169;
 }
 
 QList<PhStripText *> PhStripDoc::texts(bool alternate)
