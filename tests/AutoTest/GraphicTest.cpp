@@ -14,6 +14,7 @@
 #include "PhGraphic/PhGraphicArrow.h"
 #include "PhGraphic/PhGraphicDisc.h"
 
+
 #include "GraphicTest.h"
 
 GraphicTest::GraphicTest(QObject *parent) :
@@ -49,7 +50,6 @@ void GraphicTest::rectTest()
 
 	PhGraphicSolidRect rect;
 	rect.setColor(Qt::red);
-	QVERIFY(rect.color() == Qt::red);
 
 	connect(&view, &PhGraphicView::paint, [&](int w, int h) {
 	            rect.setSize(w / 2, h / 2);
@@ -92,13 +92,6 @@ void GraphicTest::imageTest()
 
 	unsigned int result = PhPictureTools::compare(resultImage, expectedImage);
 	QVERIFY2(result == 0, PHNQ(QString("Comparison result=%1").arg(result)));
-	QVERIFY(image.originalSize() == QSize(64, 64));
-	QVERIFY(image.fileName() == "rgbPatternTest.expected.bmp");
-
-	image.dispose();
-
-	image.setFilename("wrong_file");
-	QVERIFY(!image.init());
 }
 
 void GraphicTest::rgbPatternTest()

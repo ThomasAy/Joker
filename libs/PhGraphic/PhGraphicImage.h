@@ -49,14 +49,16 @@ public:
 	 */
 	QSize originalSize() const;
 
-	/**
-	 * @brief Dispose the image texture
-	 */
-	void dispose();
+protected:
 	/**
 	 * @brief Initialize the image texture
 	 */
 	bool init();
+
+	/**
+	 * @brief Dispose the image texture
+	 */
+	void dispose();
 
 private:
 

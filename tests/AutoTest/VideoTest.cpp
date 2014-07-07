@@ -25,6 +25,10 @@ VideoTest::VideoTest()
 			});
 }
 
+void VideoTest::paint(int width, int height) {
+	_videoEngine.drawVideo(0, 0, width, height);
+}
+
 void VideoTest::openMovieTest()
 {
 	QVERIFY(_videoEngine.open("interlace_%03d.bmp") );
@@ -42,19 +46,19 @@ void VideoTest::goToTest01() {
 	QTest::qWait(WAIT_TIME);
 	QVERIFY(QImage(_view.grabFrameBuffer()) == QImage("interlace_000.bmp"));
 
-	_videoEngine.clock()->setFrame(PhTimeCode::frameFromString("00:00:00:20", PhTimeCodeType25));
+	_videoEngine.clock()->setFrame(20);
 
 
 	QTest::qWait(WAIT_TIME);
 	QVERIFY(QImage(_view.grabFrameBuffer()) == QImage("interlace_020.bmp"));
 
-	_videoEngine.clock()->setFrame(PhTimeCode::frameFromString("00:00:04:00", PhTimeCodeType25));
+	_videoEngine.clock()->setFrame(100);
 
 
 	QTest::qWait(WAIT_TIME);
 	QVERIFY(QImage(_view.grabFrameBuffer()) == QImage("interlace_100.bmp"));
 
-	_videoEngine.clock()->setFrame(PhTimeCode::frameFromString("00:00:03:00", PhTimeCodeType25));
+	_videoEngine.clock()->setFrame(75);
 
 
 	QTest::qWait(WAIT_TIME);

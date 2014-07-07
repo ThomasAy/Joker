@@ -156,24 +156,37 @@ void PhGraphicStrip::draw(int x, int y, int width, int height, int tcOffset, QLi
 		PhTime timeIn = clockTime - syncBar_X_FromLeft * timePerPixel;
 		PhTime timeOut = timeIn + stripDuration;
 
-		//Draw backgroung picture
-		int n = width / height + 2; // compute how much background repetition do we need
-		long leftBG = 0;
-		if(offset >= 0)
-			leftBG -= offset % height;
-		else
-			leftBG -= height - ((-offset) % height);
 
-		PhGraphicTexturedRect* backgroundImage = &_backgroundImageLight;
-		if(invertedColor)
-			backgroundImage = &_backgroundImageDark;
+		if(_settings->displayBackground()) {
+			//Draw backgroung picture
+			int n = width / height + 2; // compute how much background repetition do we need
+			long leftBG = 0;
+			if(offset >= 0)
+				leftBG -= offset % height;
+			else
+				leftBG -= height - ((-offset) % height);
 
-		backgroundImage->setX(x + leftBG);
-		backgroundImage->setY(y);
-		backgroundImage->setSize(height * n, height);
-		backgroundImage->setZ(-2);
-		backgroundImage->setTextureCoordinate(n, 1);
-		backgroundImage->draw();
+			PhGraphicTexturedRect* backgroundImage = &_backgroundImageLight;
+			if(invertedColor)
+				backgroundImage = &_backgroundImageDark;
+
+			backgroundImage->setX(x + leftBG);
+			backgroundImage->setY(y);
+			backgroundImage->setSize(height * n, height);
+			backgroundImage->setZ(-2);
+			backgroundImage->setTextureCoordinate(n, 1);
+			backgroundImage->draw();
+		}
+		else {
+			PhGraphicSolidRect backgroundRect(x, y, width, height);
+			if(_settings->invertColor())
+				backgroundRect.setColor(QColor(_settings->backgroundColorDark()));
+			else
+				backgroundRect.setColor(QColor(_settings->backgroundColorLight()));
+
+			backgroundRect.setZ(-2);
+			backgroundRect.draw();
+		}
 
 		PhGraphicSolidRect syncBarRect;
 		syncBarRect.setColor(QColor(225, 86, 108));
@@ -341,28 +354,31 @@ void PhGraphicStrip::draw(int x, int y, int width, int height, int tcOffset, QLi
 
 		delete lastTextList;
 
-		foreach(PhStripCut * cut, _doc.cuts())
-		{
-			//_counter++;
-			if( (timeIn < cut->timeIn()) && (cut->timeIn() < timeOut)) {
-				PhGraphicSolidRect gCut;
-				gCut.setZ(-1);
-				gCut.setWidth(2);
+		if(_settings->displayCuts()) {
+			int cutWidth = _settings->cutWidth();
+			foreach(PhStripCut * cut, _doc.cuts())
+			{
+				//_counter++;
+				if( (timeIn < cut->timeIn()) && (cut->timeIn() < timeOut)) {
+					PhGraphicSolidRect gCut;
+					gCut.setZ(-1);
+					gCut.setWidth(cutWidth);
 
-				if(invertedColor)
-					gCut.setColor(QColor(255, 255, 255));
-				else
-					gCut.setColor(QColor(0, 0, 0));
-				gCut.setHeight(height);
-				gCut.setX(x + cut->timeIn() / timePerPixel - offset);
-				gCut.setY(y);
+					if(invertedColor)
+						gCut.setColor(QColor(255, 255, 255));
+					else
+						gCut.setColor(QColor(0, 0, 0));
+					gCut.setHeight(height);
+					gCut.setX(x + cut->timeIn() / timePerPixel - offset);
+					gCut.setY(y);
 
-				gCut.draw();
-				cutCounter++;
+					gCut.draw();
+					cutCounter++;
+				}
+				//Doesn't need to process undisplayed content
+				if(cut->timeIn() > timeOut)
+					break;
 			}
-			//Doesn't need to process undisplayed content
-			if(cut->timeIn() > timeOut)
-				break;
 		}
 
 		foreach(PhStripLoop * loop, _doc.loops())

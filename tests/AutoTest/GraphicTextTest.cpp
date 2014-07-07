@@ -57,7 +57,7 @@ void GraphicTextTest::fontTest() {
 
 	            rect.setY(200);
 	            rect.draw();
-	            QString specials("à â ç è é ê î ô ù û");
+	            QString specials("à â ç è é ê \nî ô ù û");
 	            PhGraphicText text3(&font, specials);
 	            text3.setRect(0, 200, textWidth, textHeight);
 	            text3.setColor(Qt::black);
@@ -126,25 +126,26 @@ void GraphicTextTest::setFontTest()
 	QVERIFY(font.getFontFile() == "Arial.ttf");
 	QCOMPARE(font.getBoldness(), 0);
 
-	PhFont font2;
-	font2.setFontFile("test.ttf");
+	void GraphicTextTest::computeMaxFontSizeTest()
+	{
+		PhGraphicView view;
 
-	PhGraphicText t(&font);
+		PhGraphicText t(&font);
 
-	t.setFont(&font2);
+		t.setFont(&font2);
 
-	QVERIFY(t.getFont() == &font2);
+		QVERIFY(t.getFont() == &font2);
 
-}
+	}
 
-void GraphicTextTest::nominalWidthTest() {
-	// usefull because it does the SDL init
-	PhGraphicView view(10, 10);
-	Q_UNUSED(view);
+	void GraphicTextTest::nominalWidthTest() {
+		// usefull because it does the SDL init
+		PhGraphicView view(10, 10);
+		Q_UNUSED(view);
 
-	PhFont font;
-	font.setFontFile("Arial.ttf");
-	font.select();
-	QCOMPARE(font.getNominalWidth(""), 0);
-	QCOMPARE(font.getNominalWidth("Hi, I'm a test"), 624);
-}
+		PhFont font;
+		font.setFontFile("Arial.ttf");
+		font.select();
+		QCOMPARE(font.getNominalWidth(""), 0);
+		QCOMPARE(font.getNominalWidth("Hi, I'm a test"), 624);
+	}

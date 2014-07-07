@@ -80,8 +80,7 @@ PreferencesDialog::PreferencesDialog(JokerSettings *settings, QWidget *parent) :
 	{
 		_fontList[fontName.split(".").first()] = userDirectory + "/Library/Fonts/" + fontName;
 	}
-	if(!_fontList["SWENSON"].isNull())
-		_fontList["SWENSON"] = QCoreApplication::applicationDirPath() + PATH_TO_RESSOURCES + "/" + "SWENSON.TTF";
+	_fontList["SWENSON"] = QCoreApplication::applicationDirPath() + PATH_TO_RESSOURCES + "/" + "SWENSON.TTF";
 
 
 	// _oldFont is : /Path/To/Font.ttf
@@ -109,8 +108,6 @@ PreferencesDialog::PreferencesDialog(JokerSettings *settings, QWidget *parent) :
 		showParamLTC(false);
 		showParamSony(false);
 	}
-//	ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Ok"));
-//	ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 
 	//Set the language
 	QDir appDirectory(QCoreApplication::applicationDirPath() + PATH_TO_RESSOURCES + "/");
@@ -211,12 +208,12 @@ void PreferencesDialog::on_sliderBoldness_valueChanged(int value)
 	_settings->setTextBoldness(value);
 }
 
-void PreferencesDialog::on_lineEditFilter_textEdited(const QString &arg1)
+void PreferencesDialog::on_lineEditFilter_textEdited(const QString &value)
 {
 	ui->listWidgetFont->clear();
 	foreach(QString fontName, _fontList.keys())
 	{
-		if(fontName.contains(&arg1, Qt::CaseInsensitive))
+		if(fontName.contains(&value, Qt::CaseInsensitive))
 			ui->listWidgetFont->addItem(fontName);
 	}
 }

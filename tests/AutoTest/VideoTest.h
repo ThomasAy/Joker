@@ -22,6 +22,9 @@ class VideoTest : public QObject
 public:
 	VideoTest();
 
+protected slots:
+	void paint(int width, int height);
+
 private slots:
 
 	void openMovieTest();

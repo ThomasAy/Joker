@@ -91,6 +91,7 @@ public:
 	 * @param settings The settings
 	 */
 	void setSettings(PhVideoSettings *settings);
+
 	/**
 	 * @brief Set first frame
 	 * @param frame the new first frame
