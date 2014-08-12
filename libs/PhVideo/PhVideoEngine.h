@@ -120,12 +120,6 @@ public:
 	}
 
 	/**
-	 * @brief Set first frame
-	 * @param frame the new first frame
-	 */
-	void setFirstFrame(PhFrame frame);
-
-	/**
 	 * @brief Set start time
 	 * @param time the new start time
 	 */

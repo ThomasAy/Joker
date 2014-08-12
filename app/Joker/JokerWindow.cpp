@@ -190,8 +190,7 @@ bool JokerWindow::openDocument(QString fileName)
 
 	/// - Open the corresponding video file if it exists.
 	if(openVideoFile(_doc->videoFilePath())) {
-		PhFrame frameIn = _doc->videoFrameIn();
-		_videoEngine.setFirstFrame(frameIn);
+		_videoEngine.setStartTime(_doc->videoTimeIn());
 		_mediaPanel.setStartTime(_doc->videoTimeIn());
 	}
 	else
