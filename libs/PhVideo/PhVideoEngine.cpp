@@ -143,7 +143,7 @@ bool PhVideoEngine::open(QString fileName)
 	PHDEBUG << "length:" << this->length();
 	PHDEBUG << "fps:" << this->framePerSecond();
 	_currentFrame = PHFRAMEMIN;
-	_clock.setFrame(0);
+	_clock.setTime(0);
 
 	if(_audioStream) {
 		AVCodec* audioCodec = avcodec_find_decoder(_audioStream->codec->codec_id);
