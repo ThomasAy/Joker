@@ -50,6 +50,8 @@ public:
 	void setMillisecond(PhTime ms);
 	/**
 	 * @brief Set the clock frame
+	 * Note that setTime should be preferred over setFrame, because PhTime is absolute, whereas PhFrame
+	 * depends on the timecode type, so it is fragile in a multispeed context.
 	 * @param frame the desired PhFrame
 	 */
 	void setFrame(PhFrame frame);
