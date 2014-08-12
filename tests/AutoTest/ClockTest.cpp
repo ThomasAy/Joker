@@ -22,9 +22,10 @@ void ClockTest::onTimeChanged(PhTime time)
 	_timeChangedCalled = true;
 }
 
-void ClockTest::onFrameChanged(PhFrame frame, PhTimeCodeType)
+void ClockTest::onFrameChanged(PhTime time)
 {
-	_frame = frame;
+	_time = time;
+	_frame = _clock.frame();
 	_frameChangedCalled = true;
 }
 

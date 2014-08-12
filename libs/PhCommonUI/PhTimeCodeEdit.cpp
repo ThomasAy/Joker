@@ -51,6 +51,11 @@ PhFrame PhTimeCodeEdit::frame()
 	return PhTimeCode::frameFromString(this->text(), _tcType);
 }
 
+PhTime PhTimeCodeEdit::time()
+{
+	return PhTimeCode::timeFromString(this->text(), _tcType);
+}
+
 void PhTimeCodeEdit::onTextChanged(QString text)
 {
 	if(isTimeCode()) {

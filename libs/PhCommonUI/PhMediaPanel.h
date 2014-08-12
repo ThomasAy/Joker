@@ -43,17 +43,17 @@ public:
 	 */
 	void setTCType(PhTimeCodeType tcType);
 	/**
-	 * @brief set the first Frame
-	 * @param firstFrame Desired PhFrame
+	 * @brief set the start time (i.e. first frame)
+	 * @param startTime Desired PhTime
 	 */
-	void setFirstFrame(PhFrame firstFrame);
+	void setStartTime(PhTime startTime);
 	/**
 	 * @brief set the media length
 	 * Set the media length and adjust the slider
 	 *
 	 * @param length the desired length
 	 */
-	void setMediaLength(PhFrame length);
+	void setMediaDuration(PhTime length);
 	/**
 	 * @brief set Slider Enable
 	 * @param isEnabled : true if the slider must be enabled, false otherwise.
@@ -68,16 +68,16 @@ public:
 
 
 	/**
-	 * @brief get the first PhFrame
-	 * @return the corresponding PhFrame
+	 * @brief get the start time
+	 * @return the corresponding PhTime
 	 */
-	PhFrame getFirstFrame() const;
+	PhTime getStartTime() const;
 
 	/**
 	 * @brief get the media Length
 	 * @return _mediaLength the media length
 	 */
-	PhFrame getMediaLength();
+	PhTime getMediaDuration();
 
 	/**
 	 * @brief get the timecode Type
@@ -112,11 +112,10 @@ signals:
 	 */
 	void previousFrame();
 	/**
-	 * @brief Go to the desired frame
-	 * @param frame the desired frame
-	 * @param tcType the desired PhTimeCodeType
+	 * @brief Go to the desired time
+	 * @param time the desired time
 	 */
-	void goToFrame(PhFrame frame, PhTimeCodeType tcType);
+	void goToTime(PhTime time);
 	/**
 	 * @brief Send a signal when the timecode type change
 	 * @param tcType the correponding PhTimeCodeType
@@ -125,11 +124,10 @@ signals:
 public slots:
 
 	/**
-	 * @brief Handle a modicifation of the frame
-	 * @param frame the new frame
-	 * @param tcType the corresponding PhTimeCodeType
+	 * @brief Handle a modicifation of the time
+	 * @param time the new time
 	 */
-	void onFrameChanged(PhFrame frame, PhTimeCodeType tcType);
+	void onTimeChanged(PhTime time);
 	/**
 	 * @brief Handle a modification of the playing rate
 	 * @param rate the new rate
@@ -154,8 +152,8 @@ private slots:
 private:
 	Ui::PhMediaPanel *ui;
 	PhClock *_clock;
-	PhFrame _firstFrame;
-	PhFrame _mediaLength; //number of frames of the media
+	PhTime _startTime;
+	PhTime _mediaDuration; //number of frames of the media
 };
 
 #endif // PHMEDIAPANEL_H

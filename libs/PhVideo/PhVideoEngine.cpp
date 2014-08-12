@@ -205,9 +205,19 @@ PhFrame PhVideoEngine::length()
 	return 0;
 }
 
+PhTime PhVideoEngine::duration()
+{
+	return length()*PhTimeCode::timePerFrame(_clock.timeCodeType());
+}
+
 void PhVideoEngine::setFirstFrame(PhFrame frame)
 {
 	_firstFrame = frame;
+}
+
+PhTime PhVideoEngine::startTime()
+{
+	return _firstFrame*PhTimeCode::timePerFrame(_clock.timeCodeType());
 }
 
 PhVideoEngine::~PhVideoEngine()

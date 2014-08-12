@@ -32,6 +32,11 @@ PhFrame PhTimeCodeDialog::frame()
 	return ui->_timecodeEdit->frame();
 }
 
+PhFrame PhTimeCodeDialog::time()
+{
+	return ui->_timecodeEdit->time();
+}
+
 void PhTimeCodeDialog::onFrameChanged(PhFrame, PhTimeCodeType)
 {
 	if(ui->_timecodeEdit->isTimeCode())

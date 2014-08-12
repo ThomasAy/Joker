@@ -83,3 +83,12 @@ void PhClock::tick(PhTimeScale frequence)
 	this->setTime(static_cast<int>(_time + elapsed * _rate));
 }
 
+void PhClock::goToNextFrame()
+{
+	setFrame(frame() + 1);
+}
+
+void PhClock::goToPreviousFrame()
+{
+	setFrame(frame() - 1);
+}

@@ -95,7 +95,14 @@ public:
 	 * @return The timecode of the clock
 	 */
 	QString timeCode();
-
+	/**
+	 * @brief Go to the next frame
+	 */
+	void goToNextFrame();
+	/**
+	 * @brief Go to the previous frame
+	 */
+	void goToPreviousFrame();
 
 signals:
 	/**

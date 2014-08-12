@@ -70,6 +70,11 @@ public:
 		return _firstFrame;
 	}
 	/**
+	 * @brief Get the start time
+	 * @return the start time of the video file
+	 */
+	PhTime startTime();
+	/**
 	 * @brief Get last frame
 	 * @return the last frame of the video file
 	 */
@@ -77,10 +82,15 @@ public:
 		return _firstFrame + length() - 1;
 	}
 	/**
-	 * @brief Get the length
+	 * @brief Get the length (in frames)
 	 * @return the length of the video
 	 */
 	PhFrame length();
+	/**
+	 * @brief Get the duration (in time)
+	 * @return the duration of the video
+	 */
+	PhTime duration();
 	/**
 	 * @brief Get the codec name
 	 * @return the codec name

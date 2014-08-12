@@ -44,6 +44,12 @@ public:
 	 */
 	PhFrame frame();
 
+	/**
+	 * @brief Current time value entered in the text field
+	 * @return A time value.
+	 */
+	PhFrame time();
+
 
 private slots:
 	void onFrameChanged(PhFrame frame, PhTimeCodeType tcType);

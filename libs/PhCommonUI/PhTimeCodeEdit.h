@@ -48,6 +48,11 @@ public:
 	 * @return A frame value.
 	 */
 	PhFrame frame();
+	/**
+	 * @brief Current time value entered in the text field
+	 * @return A time value.
+	 */
+	PhTime time();
 
 signals:
 
