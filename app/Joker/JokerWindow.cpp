@@ -494,22 +494,18 @@ void JokerWindow::on_actionChange_timestamp_triggered()
 
 	PhTimeCodeDialog dlg(_strip.clock()->timeCodeType(), frame);
 	if(dlg.exec() == QDialog::Accepted) {
-		PhFrame frameStamp;
 		PhTime timeStamp;
-		if(_synchronizer.videoClock()->frame() > _videoEngine.firstFrame() + _videoEngine.length()) {
-			frameStamp = dlg.frame() - (_videoEngine.length() - 1);
-			timeStamp = dlg.time() - _videoEngine.duration();
-		} else if (_synchronizer.videoClock()->frame() < _videoEngine.firstFrame()) {
-			frameStamp =  dlg.frame();
+		if(_synchronizer.videoClock()->time() > _videoEngine.startTime() + _videoEngine.duration()) {
+			timeStamp = dlg.time() - (_videoEngine.duration() - PhTimeCode::timePerFrame(_videoEngine.clock()->timeCodeType()));
+		} else if (_synchronizer.videoClock()->time() < _videoEngine.startTime()) {
 			timeStamp =  dlg.time();
 		} else {
-			frameStamp = _videoEngine.firstFrame() + dlg.frame() - _synchronizer.videoClock()->frame();
 			timeStamp = _videoEngine.startTime() + dlg.time() - _synchronizer.videoClock()->time();
 		}
 
-		_videoEngine.setFirstFrame(frameStamp);
-		_strip.clock()->setFrame(dlg.frame());
-		_doc->setVideoFrameIn(frameStamp);
+		_videoEngine.setStartTime(timeStamp);
+		_strip.clock()->setTime(dlg.time());
+		_doc->setVideoTimeIn(timeStamp);
 		_mediaPanel.setStartTime(timeStamp);
 		_doc->setModified(true);
 	}
