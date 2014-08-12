@@ -125,6 +125,12 @@ public:
 	 */
 	void setFirstFrame(PhFrame frame);
 
+	/**
+	 * @brief Set start time
+	 * @param time the new start time
+	 */
+	void setStartTime(PhTime time);
+
 	// Methods
 	/**
 	 * @brief Open a video file

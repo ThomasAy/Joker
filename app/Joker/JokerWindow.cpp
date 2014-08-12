@@ -439,29 +439,29 @@ bool JokerWindow::openVideoFile(QString videoFile)
 	QFileInfo lastFileInfo(_doc->videoFilePath());
 	QFileInfo fileInfo(videoFile);
 	if (fileInfo.exists() && _videoEngine.open(videoFile)) {
-		PhFrame frameIn = _videoEngine.firstFrame();
+		PhTime timeIn = _videoEngine.startTime();
 
 		_mediaPanel.setStartTime(_videoEngine.startTime());
 		_mediaPanel.setMediaDuration(_videoEngine.duration());
 
 		if(videoFile != _doc->videoFilePath()) {
 			_doc->setVideoFilePath(videoFile);
-			if(frameIn > 0)
-				_doc->setVideoFrameIn(frameIn);
+			if(timeIn > 0)
+				_doc->setVideoTimeIn(timeIn);
 			_doc->setModified(true);
 		}
 
-		if(frameIn == 0) {
-			frameIn = _doc->videoFrameIn();
-			_videoEngine.setFirstFrame(frameIn);
-			_videoEngine.clock()->setFrame(frameIn);
+		if(timeIn == 0) {
+			timeIn = _doc->videoTimeIn();
+			_videoEngine.setStartTime(timeIn);
+			_videoEngine.clock()->setTime(timeIn);
 			if(fileInfo.fileName() != lastFileInfo.fileName()) {
 				on_actionChange_timestamp_triggered();
-				frameIn = _videoEngine.firstFrame();
+				timeIn = _videoEngine.startTime();
 			}
 		}
 
-		_videoEngine.clock()->setFrame(frameIn);
+		_videoEngine.clock()->setTime(timeIn);
 
 		_settings->setLastVideoFolder(fileInfo.absolutePath());
 		return true;
