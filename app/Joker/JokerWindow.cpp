@@ -613,7 +613,7 @@ void JokerWindow::on_actionTimecode_triggered()
 
 	PhTimeCodeDialog dlg(_strip.clock()->timeCodeType(), _strip.clock()->frame());
 	if(dlg.exec() == QDialog::Accepted)
-		_strip.clock()->setFrame(dlg.frame());
+		_strip.clock()->setTime(dlg.time());
 
 	fadeInMediaPanel();
 }
