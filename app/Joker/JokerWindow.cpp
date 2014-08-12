@@ -358,13 +358,13 @@ void JokerWindow::on_actionPlay_backward_triggered()
 void JokerWindow::on_actionStep_forward_triggered()
 {
 	_strip.clock()->setRate(0.0);
-	_strip.clock()->setFrame(_strip.clock()->frame() + 1);
+	_strip.clock()->goToNextFrame();
 }
 
 void JokerWindow::on_actionStep_backward_triggered()
 {
 	_strip.clock()->setRate(0.0);
-	_strip.clock()->setFrame(_strip.clock()->frame() - 1);
+	_strip.clock()->goToPreviousFrame();
 }
 
 void JokerWindow::on_actionStep_time_forward_triggered()
