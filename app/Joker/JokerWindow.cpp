@@ -483,18 +483,18 @@ void JokerWindow::on_actionChange_timestamp_triggered()
 {
 	hideMediaPanel();
 	_strip.clock()->setRate(0);
-	PhFrame frame;
-	if(_synchronizer.videoClock()->frame() < _videoEngine.firstFrame())
-		frame = _videoEngine.firstFrame();
-	else if(_synchronizer.videoClock()->frame() > _videoEngine.firstFrame() + _videoEngine.length())
-		frame = _videoEngine.lastFrame();
+	PhTime time;
+	if(_synchronizer.videoClock()->time() < _videoEngine.startTime())
+		time = _videoEngine.startTime();
+	else if(_synchronizer.videoClock()->time() > _videoEngine.lastFrameTime())
+		time = _videoEngine.lastFrameTime();
 	else
-		frame = _synchronizer.videoClock()->frame();
+		time = _synchronizer.videoClock()->time();
 
-	PhTimeCodeDialog dlg(_strip.clock()->timeCodeType(), frame);
+	PhTimeCodeDialog dlg(_strip.clock()->timeCodeType(), time);
 	if(dlg.exec() == QDialog::Accepted) {
 		PhTime timeStamp;
-		if(_synchronizer.videoClock()->time() > _videoEngine.startTime() + _videoEngine.duration()) {
+		if(_synchronizer.videoClock()->time() > _videoEngine.lastFrameTime()) {
 			timeStamp = dlg.time() - (_videoEngine.duration() - PhTimeCode::timePerFrame(_videoEngine.clock()->timeCodeType()));
 		} else if (_synchronizer.videoClock()->time() < _videoEngine.startTime()) {
 			timeStamp =  dlg.time();
@@ -610,7 +610,7 @@ void JokerWindow::on_actionTimecode_triggered()
 {
 	hideMediaPanel();
 
-	PhTimeCodeDialog dlg(_strip.clock()->timeCodeType(), _strip.clock()->frame());
+	PhTimeCodeDialog dlg(_strip.clock()->timeCodeType(), _strip.clock()->time());
 	if(dlg.exec() == QDialog::Accepted)
 		_strip.clock()->setTime(dlg.time());
 
@@ -753,9 +753,9 @@ void JokerWindow::on_actionShow_ruler_toggled(bool checked)
 void JokerWindow::on_actionChange_ruler_timestamp_triggered()
 {
 	PhTimeCodeType tcType = _doc->timeCodeType();
-	PhTimeCodeDialog dlg(tcType, _settings->rulerTimeIn() / PhTimeCode::timePerFrame(tcType), this);
+	PhTimeCodeDialog dlg(tcType, _settings->rulerTimeIn(), this);
 	if(dlg.exec())
-		_settings->setRulerTimeIn(dlg.frame() * PhTimeCode::timePerFrame(tcType));
+		_settings->setRulerTimeIn(dlg.time());
 }
 
 void JokerWindow::on_actionNew_triggered()

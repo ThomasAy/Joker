@@ -220,6 +220,11 @@ void PhVideoEngine::setStartTime(PhTime time)
 	_firstFrame = time/PhTimeCode::timePerFrame(_clock.timeCodeType());
 }
 
+PhTime PhVideoEngine::lastFrameTime()
+{
+	return lastFrame()*PhTimeCode::timePerFrame(_clock.timeCodeType());
+}
+
 PhVideoEngine::~PhVideoEngine()
 {
 	close();

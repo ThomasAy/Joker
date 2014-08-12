@@ -28,15 +28,17 @@ public:
 	explicit PhTimeCodeEdit(QWidget *parent = 0);
 
 	/**
-	 * @brief set Frame
-	 *
+	 * @brief set Time
 	 * The corresponding timecode will be displayed on the window.
-	 * For example, if frame = 32 and tcType = PhTimeCodeType24, the
-	 * window will display 00:00:01:12
-	 * @param frame the desired PhFrame
-	 * @param tcType the corresponding PhTimeCodeType
+	 * @param time the desired PhTime
 	 */
-	void setFrame(PhFrame frame, PhTimeCodeType tcType);
+	void setTime(PhTime time);
+
+	/**
+	 * @brief set Timecode Type
+	 * @param tcType the desired PhTimeCodeType
+	 */
+	void setTCType(PhTimeCodeType tcType);
 
 	/**
 	 * @brief Check the timecode
@@ -67,6 +69,17 @@ private slots:
 	void onTextChanged(QString text);
 
 private:
+	/**
+	 * @brief set Frame
+	 *
+	 * The corresponding timecode will be displayed on the window.
+	 * For example, if frame = 32 and tcType = PhTimeCodeType24, the
+	 * window will display 00:00:01:12
+	 * @param frame the desired PhFrame
+	 * @param tcType the corresponding PhTimeCodeType
+	 */
+	void setFrame(PhFrame frame, PhTimeCodeType tcType);
+
 	PhTimeCodeType _tcType;
 	bool eventFilter(QObject *sender, QEvent *event);
 	QString _oldFrame;

@@ -82,6 +82,11 @@ public:
 		return _firstFrame + length() - 1;
 	}
 	/**
+	 * @brief Get the last frame time
+	 * @return the time of the last frame of the video file
+	 */
+	PhTime lastFrameTime();
+	/**
 	 * @brief Get the length (in frames)
 	 * @return the length of the video
 	 */

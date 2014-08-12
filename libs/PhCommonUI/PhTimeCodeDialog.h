@@ -34,7 +34,7 @@ public:
 	 * @param frame The dialog initial frame.
 	 * @param parent The object owner.
 	 */
-	explicit PhTimeCodeDialog(PhTimeCodeType tcType, PhFrame frame = 0, QWidget *parent = 0);
+	explicit PhTimeCodeDialog(PhTimeCodeType tcType, PhTime time = 0, QWidget *parent = 0);
 
 	~PhTimeCodeDialog();
 
@@ -52,7 +52,7 @@ public:
 
 
 private slots:
-	void onFrameChanged(PhFrame frame, PhTimeCodeType tcType);
+	void onFrameChanged(PhTime);
 
 private:
 	Ui::PhTimeCodeDialog *ui;
