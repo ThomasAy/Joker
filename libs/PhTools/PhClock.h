@@ -117,10 +117,9 @@ signals:
 	void rateChanged(PhRate rate);
 	/**
 	 * @brief emit a signal when the frame changed
-	 * @param frame the new frame
-	 * @param tcType the corresponding PhTimeCodeType
+	 * @param time the new time
 	 */
-	void frameChanged(PhFrame frame, PhTimeCodeType tcType);
+	void frameChanged(PhTime time);
 	/**
 	 * @brief emit a signal when the timecode type changed
 	 * @param tcType the new PhTimeCodeType
