@@ -58,6 +58,15 @@ public:
 	static PhFrame frameFromBcd(unsigned int bcd, PhTimeCodeType type);
 
 	/**
+	 * @brief Compute the time from a timecode binary coded decimal (BCD) representation and a type.
+	 *
+	 * @param bcd A BCD value.
+	 * @param type A PhTimeCodeType value.
+	 * @return The corresponding frame number.
+	 */
+	static PhTime timeFromBcd(unsigned int bcd, PhTimeCodeType type);
+
+	/**
 	 * @brief Get the time per frame according to a type of TC
 	 * @param type A timecode type
 	 * @return A time value
