@@ -440,9 +440,6 @@ bool JokerWindow::openVideoFile(QString videoFile)
 	if (fileInfo.exists() && _videoEngine.open(videoFile)) {
 		PhTime timeIn = _videoEngine.startTime();
 
-		_mediaPanel.setStartTime(_videoEngine.startTime());
-		_mediaPanel.setMediaDuration(_videoEngine.duration());
-
 		if(videoFile != _doc->videoFilePath()) {
 			_doc->setVideoFilePath(videoFile);
 			if(timeIn > 0)
@@ -461,6 +458,8 @@ bool JokerWindow::openVideoFile(QString videoFile)
 		}
 
 		_videoEngine.clock()->setTime(timeIn);
+		_mediaPanel.setStartTime(_videoEngine.startTime());
+		_mediaPanel.setMediaDuration(_videoEngine.duration());
 
 		_settings->setLastVideoFolder(fileInfo.absolutePath());
 		return true;
