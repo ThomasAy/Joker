@@ -73,12 +73,12 @@ public:
 	}
 
 private slots:
-	void onStripFrameChanged(PhFrame frame, PhTimeCodeType tcType);
+	void onStripFrameChanged(PhTime time);
 	void onStripRateChanged(PhRate rate);
-	void onVideoFrameChanged(PhFrame frame, PhTimeCodeType tcType);
+	void onVideoFrameChanged(PhTime time);
 	void onVideoRateChanged(PhRate rate);
 	void onVideoTCTypeChanged(PhTimeCodeType tcType);
-	void onSyncFrameChanged(PhFrame frame, PhTimeCodeType tcType);
+	void onSyncFrameChanged(PhTime time);
 	void onSyncRateChanged(PhRate rate);
 private:
 	int _syncType;

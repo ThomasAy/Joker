@@ -50,6 +50,8 @@ public:
 	void setMillisecond(PhTime ms);
 	/**
 	 * @brief Set the clock frame
+	 * Note that setTime should be preferred over setFrame, because PhTime is absolute, whereas PhFrame
+	 * depends on the timecode type, so it is fragile in a multispeed context.
 	 * @param frame the desired PhFrame
 	 */
 	void setFrame(PhFrame frame);
@@ -95,7 +97,14 @@ public:
 	 * @return The timecode of the clock
 	 */
 	QString timeCode();
-
+	/**
+	 * @brief Go to the next frame
+	 */
+	void goToNextFrame();
+	/**
+	 * @brief Go to the previous frame
+	 */
+	void goToPreviousFrame();
 
 signals:
 	/**
@@ -110,10 +119,9 @@ signals:
 	void rateChanged(PhRate rate);
 	/**
 	 * @brief emit a signal when the frame changed
-	 * @param frame the new frame
-	 * @param tcType the corresponding PhTimeCodeType
+	 * @param time the new time
 	 */
-	void frameChanged(PhFrame frame, PhTimeCodeType tcType);
+	void frameChanged(PhTime time);
 	/**
 	 * @brief emit a signal when the timecode type changed
 	 * @param tcType the new PhTimeCodeType

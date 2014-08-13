@@ -143,7 +143,7 @@ bool PhVideoEngine::open(QString fileName)
 	PHDEBUG << "length:" << this->length();
 	PHDEBUG << "fps:" << this->framePerSecond();
 	_currentFrame = PHFRAMEMIN;
-	_clock.setFrame(0);
+	_clock.setTime(0);
 
 	if(_audioStream) {
 		AVCodec* audioCodec = avcodec_find_decoder(_audioStream->codec->codec_id);
@@ -205,9 +205,24 @@ PhFrame PhVideoEngine::length()
 	return 0;
 }
 
-void PhVideoEngine::setFirstFrame(PhFrame frame)
+PhTime PhVideoEngine::duration()
 {
-	_firstFrame = frame;
+	return length()*PhTimeCode::timePerFrame(_clock.timeCodeType());
+}
+
+PhTime PhVideoEngine::startTime()
+{
+	return _firstFrame*PhTimeCode::timePerFrame(_clock.timeCodeType());
+}
+
+void PhVideoEngine::setStartTime(PhTime time)
+{
+	_firstFrame = time/PhTimeCode::timePerFrame(_clock.timeCodeType());
+}
+
+PhTime PhVideoEngine::lastFrameTime()
+{
+	return lastFrame()*PhTimeCode::timePerFrame(_clock.timeCodeType());
 }
 
 PhVideoEngine::~PhVideoEngine()

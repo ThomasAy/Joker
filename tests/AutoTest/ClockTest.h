@@ -18,7 +18,7 @@ public:
 
 protected slots:
 	void onTimeChanged(PhTime time);
-	void onFrameChanged(PhFrame frame, PhTimeCodeType);
+	void onFrameChanged(PhTime time);
 	void onTimeCodeTypeChanged(PhTimeCodeType tcType);
 	void onRateChanged(PhRate rate);
 

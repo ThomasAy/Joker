@@ -45,7 +45,10 @@ int PhLtcReader::processAudio(const void *inputBuffer, void *, unsigned long fra
 			_clock.setRate(-1);
 		else
 			_clock.setRate(0);
-		_clock.setFrame(newFrame);
+
+		PhTime newTime = PhTimeCode::timeFromHhMmSsFf(hhmmssff, _clock.timeCodeType());
+		_clock.setTime(newTime);
+
 		_noFrameCounter = 0;
 	}
 

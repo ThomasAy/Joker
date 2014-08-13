@@ -9,12 +9,13 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 
-PhTimeCodeDialog::PhTimeCodeDialog(PhTimeCodeType tcType, PhFrame frame, QWidget *parent) :
+PhTimeCodeDialog::PhTimeCodeDialog(PhTimeCodeType tcType, PhTime time, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::PhTimeCodeDialog)
 {
 	ui->setupUi(this);
-	ui->_timecodeEdit->setFrame(frame, tcType);
+	ui->_timecodeEdit->setTime(time);
+	ui->_timecodeEdit->setTCType(tcType);
 
 	connect(ui->cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 	connect(ui->okButton, SIGNAL(clicked()), this, SLOT(accept()));
@@ -32,7 +33,12 @@ PhFrame PhTimeCodeDialog::frame()
 	return ui->_timecodeEdit->frame();
 }
 
-void PhTimeCodeDialog::onFrameChanged(PhFrame, PhTimeCodeType)
+PhFrame PhTimeCodeDialog::time()
+{
+	return ui->_timecodeEdit->time();
+}
+
+void PhTimeCodeDialog::onFrameChanged(PhTime)
 {
 	if(ui->_timecodeEdit->isTimeCode())
 		ui->okButton->setEnabled(true);

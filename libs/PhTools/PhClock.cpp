@@ -24,7 +24,7 @@ void PhClock::setTimeCodeType(PhTimeCodeType tcType)
 	}
 	PhFrame newFrame = frame();
 	if(lastFrame != newFrame)
-		emit frameChanged(newFrame, _tcType);
+		emit frameChanged(_time);
 }
 
 void PhClock::setTime(qint64 time)
@@ -36,7 +36,7 @@ void PhClock::setTime(qint64 time)
 	}
 	PhFrame newFrame = frame();
 	if(lastFrame != newFrame)
-		emit frameChanged(newFrame, _tcType);
+		emit frameChanged(time);
 }
 
 void PhClock::setRate(PhRate rate)
@@ -83,3 +83,12 @@ void PhClock::tick(PhTimeScale frequence)
 	this->setTime(static_cast<int>(_time + elapsed * _rate));
 }
 
+void PhClock::goToNextFrame()
+{
+	setFrame(frame() + 1);
+}
+
+void PhClock::goToPreviousFrame()
+{
+	setFrame(frame() - 1);
+}

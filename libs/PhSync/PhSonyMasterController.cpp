@@ -147,9 +147,9 @@ void PhSonyMasterController::processCommand(unsigned char cmd1, unsigned char cm
 		switch (cmd2) {
 		case 0x04:
 			{
-				PhFrame frame = PhTimeCode::frameFromBcd(*(unsigned int *)dataIn, _clock.timeCodeType());
-//			PHDEBUG << _comSuffix << " => LTC Time Data : " << PhTimeCode::stringFromFrame(frame, _clock.getTCType());
-				_clock.setFrame(frame);
+				PhTime time = PhTimeCode::timeFromBcd(*(unsigned int *)dataIn, _clock.timeCodeType());
+//			PHDEBUG << _comSuffix << " => LTC Time Data : " << PhTimeCode::stringFromTime(time, _clock.getTCType());
+				_clock.setTime(time);
 				break;
 			}
 		case 0x20:

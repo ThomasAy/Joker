@@ -58,6 +58,15 @@ public:
 	static PhFrame frameFromBcd(unsigned int bcd, PhTimeCodeType type);
 
 	/**
+	 * @brief Compute the time from a timecode binary coded decimal (BCD) representation and a type.
+	 *
+	 * @param bcd A BCD value.
+	 * @param type A PhTimeCodeType value.
+	 * @return The corresponding frame number.
+	 */
+	static PhTime timeFromBcd(unsigned int bcd, PhTimeCodeType type);
+
+	/**
 	 * @brief Get the time per frame according to a type of TC
 	 * @param type A timecode type
 	 * @return A time value
@@ -129,7 +138,16 @@ public:
 	 * @param type A timecode type.
 	 * @return The corresponding time value.
 	 */
-	static PhFrame timeFromHhMmSsFf(unsigned int hh, unsigned int mm, unsigned int ss, unsigned int ff, PhTimeCodeType type);
+	static PhTime timeFromHhMmSsFf(unsigned int hh, unsigned int mm, unsigned int ss, unsigned int ff, PhTimeCodeType type);
+
+	/**
+	 * @brief Compute time from the HH, MM, SS and FF timecode component and a type.
+	 *
+	 * @param hhmmssff Array containing the HH, MM, SS, FF values.
+	 * @param type A timecode type.
+	 * @return The corresponding time value.
+	 */
+	static PhTime timeFromHhMmSsFf(unsigned int * hhmmssff, PhTimeCodeType type);
 
 	/**
 	 * @brief Check if the timecode type is dropframe.
