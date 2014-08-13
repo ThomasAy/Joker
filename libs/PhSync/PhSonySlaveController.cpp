@@ -132,9 +132,9 @@ void PhSonySlaveController::processCommand(unsigned char cmd1, unsigned char cmd
 			}
 		case 0x31:
 			{
-				PhTime time = PhTimeCode::timeFromBcd(*(unsigned int *)dataIn, _clock.timeCodeType());
-				_clock.setTime(time);
-				PHDEBUG << _comSuffix << "Cue at " << PhTimeCode::stringFromTime(_clock.time(), _clock.timeCodeType()) << "=> ACK";
+				PhFrame frame = PhTimeCode::frameFromBcd(*(unsigned int *)dataIn, _clock.timeCodeType());
+				_clock.setFrame(frame);
+				PHDEBUG << _comSuffix << "Cue at " << PhTimeCode::stringFromFrame(_clock.frame(), _clock.timeCodeType()) << "=> ACK";
 				sendAck();
 				break;
 			}

@@ -70,11 +70,6 @@ public:
 		return _firstFrame;
 	}
 	/**
-	 * @brief Get the start time
-	 * @return the start time of the video file
-	 */
-	PhTime startTime();
-	/**
 	 * @brief Get last frame
 	 * @return the last frame of the video file
 	 */
@@ -82,20 +77,10 @@ public:
 		return _firstFrame + length() - 1;
 	}
 	/**
-	 * @brief Get the last frame time
-	 * @return the time of the last frame of the video file
-	 */
-	PhTime lastFrameTime();
-	/**
-	 * @brief Get the length (in frames)
+	 * @brief Get the length
 	 * @return the length of the video
 	 */
 	PhFrame length();
-	/**
-	 * @brief Get the duration (in time)
-	 * @return the duration of the video
-	 */
-	PhTime duration();
 	/**
 	 * @brief Get the codec name
 	 * @return the codec name
@@ -125,10 +110,10 @@ public:
 	}
 
 	/**
-	 * @brief Set start time
-	 * @param time the new start time
+	 * @brief Set first frame
+	 * @param frame the new first frame
 	 */
-	void setStartTime(PhTime time);
+	void setFirstFrame(PhFrame frame);
 
 	// Methods
 	/**

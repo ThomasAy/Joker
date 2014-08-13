@@ -190,8 +190,9 @@ bool JokerWindow::openDocument(QString fileName)
 
 	/// - Open the corresponding video file if it exists.
 	if(openVideoFile(_doc->videoFilePath())) {
-		_videoEngine.setStartTime(_doc->videoTimeIn());
-		_mediaPanel.setStartTime(_doc->videoTimeIn());
+		PhFrame frameIn = _doc->videoFrameIn();
+		_videoEngine.setFirstFrame(frameIn);
+		_mediaPanel.setFirstFrame(frameIn);
 	}
 	else
 		_videoEngine.close();
@@ -357,13 +358,13 @@ void JokerWindow::on_actionPlay_backward_triggered()
 void JokerWindow::on_actionStep_forward_triggered()
 {
 	_strip.clock()->setRate(0.0);
-	_strip.clock()->goToNextFrame();
+	_strip.clock()->setFrame(_strip.clock()->frame() + 1);
 }
 
 void JokerWindow::on_actionStep_backward_triggered()
 {
 	_strip.clock()->setRate(0.0);
-	_strip.clock()->goToPreviousFrame();
+	_strip.clock()->setFrame(_strip.clock()->frame() - 1);
 }
 
 void JokerWindow::on_actionStep_time_forward_triggered()
@@ -438,28 +439,29 @@ bool JokerWindow::openVideoFile(QString videoFile)
 	QFileInfo lastFileInfo(_doc->videoFilePath());
 	QFileInfo fileInfo(videoFile);
 	if (fileInfo.exists() && _videoEngine.open(videoFile)) {
-		PhTime timeIn = _videoEngine.startTime();
+		PhFrame frameIn = _videoEngine.firstFrame();
+
+		_mediaPanel.setFirstFrame(frameIn);
+		_mediaPanel.setMediaLength(_videoEngine.length());
 
 		if(videoFile != _doc->videoFilePath()) {
 			_doc->setVideoFilePath(videoFile);
-			if(timeIn > 0)
-				_doc->setVideoTimeIn(timeIn);
+			if(frameIn > 0)
+				_doc->setVideoFrameIn(frameIn);
 			_doc->setModified(true);
 		}
 
-		if(timeIn == 0) {
-			timeIn = _doc->videoTimeIn();
-			_videoEngine.setStartTime(timeIn);
-			_videoEngine.clock()->setTime(timeIn);
+		if(frameIn == 0) {
+			frameIn = _doc->videoFrameIn();
+			_videoEngine.setFirstFrame(frameIn);
+			_videoEngine.clock()->setFrame(frameIn);
 			if(fileInfo.fileName() != lastFileInfo.fileName()) {
 				on_actionChange_timestamp_triggered();
-				timeIn = _videoEngine.startTime();
+				frameIn = _videoEngine.firstFrame();
 			}
 		}
 
-		_videoEngine.clock()->setTime(timeIn);
-		_mediaPanel.setStartTime(_videoEngine.startTime());
-		_mediaPanel.setMediaDuration(_videoEngine.duration());
+		_videoEngine.clock()->setFrame(frameIn);
 
 		_settings->setLastVideoFolder(fileInfo.absolutePath());
 		return true;
@@ -482,29 +484,28 @@ void JokerWindow::on_actionChange_timestamp_triggered()
 {
 	hideMediaPanel();
 	_strip.clock()->setRate(0);
-	PhTime time;
-	if(_synchronizer.videoClock()->time() < _videoEngine.startTime())
-		time = _videoEngine.startTime();
-	else if(_synchronizer.videoClock()->time() > _videoEngine.lastFrameTime())
-		time = _videoEngine.lastFrameTime();
+	PhFrame frame;
+	if(_synchronizer.videoClock()->frame() < _videoEngine.firstFrame())
+		frame = _videoEngine.firstFrame();
+	else if(_synchronizer.videoClock()->frame() > _videoEngine.firstFrame() + _videoEngine.length())
+		frame = _videoEngine.lastFrame();
 	else
-		time = _synchronizer.videoClock()->time();
+		frame = _synchronizer.videoClock()->frame();
 
-	PhTimeCodeDialog dlg(_strip.clock()->timeCodeType(), time);
+	PhTimeCodeDialog dlg(_strip.clock()->timeCodeType(), frame);
 	if(dlg.exec() == QDialog::Accepted) {
-		PhTime timeStamp;
-		if(_synchronizer.videoClock()->time() > _videoEngine.lastFrameTime()) {
-			timeStamp = dlg.time() - (_videoEngine.duration() - PhTimeCode::timePerFrame(_videoEngine.clock()->timeCodeType()));
-		} else if (_synchronizer.videoClock()->time() < _videoEngine.startTime()) {
-			timeStamp =  dlg.time();
-		} else {
-			timeStamp = _videoEngine.startTime() + dlg.time() - _synchronizer.videoClock()->time();
-		}
+		PhFrame frameStamp;
+		if(_synchronizer.videoClock()->frame() > _videoEngine.firstFrame() + _videoEngine.length())
+			frameStamp = dlg.frame() - (_videoEngine.length() - 1);
+		else if (_synchronizer.videoClock()->frame() < _videoEngine.firstFrame())
+			frameStamp =  dlg.frame();
+		else
+			frameStamp = _videoEngine.firstFrame() + dlg.frame() - _synchronizer.videoClock()->frame();
 
-		_videoEngine.setStartTime(timeStamp);
-		_strip.clock()->setTime(dlg.time());
-		_doc->setVideoTimeIn(timeStamp);
-		_mediaPanel.setStartTime(timeStamp);
+		_videoEngine.setFirstFrame(frameStamp);
+		_strip.clock()->setFrame(dlg.frame());
+		_doc->setVideoFrameIn(frameStamp);
+		_mediaPanel.setFirstFrame(frameStamp);
 		_doc->setModified(true);
 	}
 
@@ -609,9 +610,9 @@ void JokerWindow::on_actionTimecode_triggered()
 {
 	hideMediaPanel();
 
-	PhTimeCodeDialog dlg(_strip.clock()->timeCodeType(), _strip.clock()->time());
+	PhTimeCodeDialog dlg(_strip.clock()->timeCodeType(), _strip.clock()->frame());
 	if(dlg.exec() == QDialog::Accepted)
-		_strip.clock()->setTime(dlg.time());
+		_strip.clock()->setFrame(dlg.frame());
 
 	fadeInMediaPanel();
 }
@@ -752,9 +753,9 @@ void JokerWindow::on_actionShow_ruler_toggled(bool checked)
 void JokerWindow::on_actionChange_ruler_timestamp_triggered()
 {
 	PhTimeCodeType tcType = _doc->timeCodeType();
-	PhTimeCodeDialog dlg(tcType, _settings->rulerTimeIn(), this);
+	PhTimeCodeDialog dlg(tcType, _settings->rulerTimeIn() / PhTimeCode::timePerFrame(tcType), this);
 	if(dlg.exec())
-		_settings->setRulerTimeIn(dlg.time());
+		_settings->setRulerTimeIn(dlg.frame() * PhTimeCode::timePerFrame(tcType));
 }
 
 void JokerWindow::on_actionNew_triggered()

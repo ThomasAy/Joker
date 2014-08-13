@@ -24,12 +24,10 @@ void TimeCodeEditTest::setFrameTest() {
 
 	QCOMPARE(tcEdit.text(), QString("00:00:00:00"));
 
-	tcEdit.setTime(24000);
-	tcEdit.setTCType(PhTimeCodeType25);
+	tcEdit.setFrame(25, PhTimeCodeType25);
 	QCOMPARE(tcEdit.text(), QString("00:00:01:00"));
 
-	tcEdit.setTime(48000);
-	tcEdit.setTCType(PhTimeCodeType24);
+	tcEdit.setFrame(48, PhTimeCodeType24);
 	QCOMPARE(tcEdit.text(), QString("00:00:02:00"));
 }
 
@@ -81,8 +79,7 @@ void TimeCodeEditTest::keyboardBadInputTest()
 {
 	PhTimeCodeEdit tcEdit;
 
-	tcEdit.setTime(24000);
-	tcEdit.setTCType(PhTimeCodeType25);
+	tcEdit.setFrame(25, PhTimeCodeType25);
 	QCOMPARE(tcEdit.text(), QString("00:00:01:00"));
 
 	QTest::keyClicks(&tcEdit, "a");

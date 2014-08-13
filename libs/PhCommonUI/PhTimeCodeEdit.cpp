@@ -30,22 +30,7 @@ void PhTimeCodeEdit::setFrame(PhFrame frame, PhTimeCodeType tcType)
 	this->setText(PhTimeCode::stringFromFrame(frame, tcType));
 	if(_oldFrame.length() == 0)
 		_oldFrame = this->text();
-}
 
-void PhTimeCodeEdit::setTime(PhTime time)
-{
-	this->setText(PhTimeCode::stringFromTime(time, _tcType));
-	if(_oldFrame.length() == 0)
-		_oldFrame = this->text();
-}
-
-void PhTimeCodeEdit::setTCType(PhTimeCodeType tcType)
-{
-	PhTime time = PhTimeCode::timeFromString(this->text(), _tcType);
-	_tcType = tcType;
-	this->setText(PhTimeCode::stringFromTime(time, tcType));
-	if(_oldFrame.length() == 0)
-		_oldFrame = this->text();
 }
 
 bool PhTimeCodeEdit::isTimeCode()
@@ -64,11 +49,6 @@ bool PhTimeCodeEdit::isTimeCode()
 PhFrame PhTimeCodeEdit::frame()
 {
 	return PhTimeCode::frameFromString(this->text(), _tcType);
-}
-
-PhTime PhTimeCodeEdit::time()
-{
-	return PhTimeCode::timeFromString(this->text(), _tcType);
 }
 
 void PhTimeCodeEdit::onTextChanged(QString text)
