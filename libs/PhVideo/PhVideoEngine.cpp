@@ -6,10 +6,9 @@
 
 #include "PhVideoEngine.h"
 
-PhVideoEngine::PhVideoEngine() :  QObject(NULL),
-	_settings(NULL),
-	_fileName(""),
-	_clock(PhTimeCodeType25)
+PhVideoEngine::PhVideoEngine(PhVideoSettings *settings) :  QObject(NULL),
+	_settings(settings),
+	_fileName("")
 {
 	PHDEBUG << "Using FFMpeg widget for video playback.";
 	av_register_all();
@@ -23,7 +22,7 @@ bool PhVideoEngine::open(QString fileName)
 
 	this->close();
 
-	_clock.setFrame(0);
+	_clock.setTime(0);
 	_oldFrame = PHFRAMEMIN;
 
 	_decoder = new PhAVDecoder(_settings->videoBufferSize());
@@ -32,7 +31,8 @@ bool PhVideoEngine::open(QString fileName)
 
 	_fileName = fileName;
 
-	_clock.setTimeCodeType(_decoder->timeCodeType());
+	_tcType = _decoder->timeCodeType();
+	emit timeCodeTypeChanged(_tcType);
 
 	QThread *thread = new QThread;
 
@@ -69,17 +69,22 @@ void PhVideoEngine::setDeinterlace(bool deinterlace)
 		_decoder->setDeinterlace(deinterlace);
 }
 
-void PhVideoEngine::setSettings(PhVideoSettings *settings)
+bool PhVideoEngine::bilinearFiltering()
 {
-	_settings = settings;
+	return _videoRect.bilinearFiltering();
+}
+
+void PhVideoEngine::setBilinearFiltering(bool bilinear)
+{
+	_videoRect.setBilinearFiltering(bilinear);
 }
 
 void PhVideoEngine::drawVideo(int x, int y, int w, int h)
 {
 	if(_decoder) {
-		PhFrame frame = _clock.frame();
+		PhFrame frame = _clock.frame(_tcType);
 		if(_settings)
-			frame += _settings->screenDelay() * PhTimeCode::getFps(_clock.timeCodeType()) * _clock.rate() / 1000;
+			frame += _settings->screenDelay() * PhTimeCode::getFps(_tcType) * _clock.rate() / 1000;
 
 		if(frame != _oldFrame) {
 			uint8_t *buffer = _decoder->getBuffer(frame);
@@ -115,10 +120,15 @@ void PhVideoEngine::errorString(QString msg)
 	PHDEBUG << msg;
 }
 
-void PhVideoEngine::setFirstFrame(PhFrame frame)
+void PhVideoEngine::setFrameIn(PhFrame frame)
 {
 	if(_decoder)
-		_decoder->setFirstFrame(frame);
+		_decoder->setFrameIn(frame);
+}
+
+void PhVideoEngine::setTimeIn(PhTime timeIn)
+{
+	setFrameIn(timeIn / PhTimeCode::timePerFrame(_tcType));
 }
 
 PhVideoEngine::~PhVideoEngine()
@@ -126,25 +136,23 @@ PhVideoEngine::~PhVideoEngine()
 	close();
 }
 
-PhFrame PhVideoEngine::firstFrame()
+PhFrame PhVideoEngine::frameIn()
 {
 	if(_decoder)
-		return _decoder->firstFrame();
+		return _decoder->frameIn();
 	return 0;
 }
 
-PhFrame PhVideoEngine::lastFrame()
-{
-	if(_decoder)
-		return _decoder->firstFrame() + _decoder->length() - 1;
-	return 0;
-}
-
-PhFrame PhVideoEngine::length()
+PhFrame PhVideoEngine::frameLength()
 {
 	if(_decoder)
 		return _decoder->length();
 	return 0;
+}
+
+PhTime PhVideoEngine::length()
+{
+	return frameLength() * PhTimeCode::timePerFrame(_tcType);
 }
 
 float PhVideoEngine::framePerSecond()

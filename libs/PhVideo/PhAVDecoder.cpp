@@ -13,20 +13,21 @@
 
 PhAVDecoder::PhAVDecoder(int bufferSize, QObject *parent) :
 	QObject(parent),
+	_interupted(false),
 	_bufferSize(bufferSize),
 	_bufferFreeSpace(bufferSize),
 	_firstFrame(0),
 	_nextDecodingFrame(0),
+	_lastDecodedFrame(0),
+	_oldFrame(0),
 	_direction(0),
 	_pFormatContext(NULL),
 	_videoStream(NULL),
 	_videoFrame(NULL),
 	_deinterlace(false),
+	_bilinearFiltering(true),
 	_audioStream(NULL),
-	_audioFrame(NULL),
-	_interupted(false),
-	_lastDecodedFrame(0),
-	_oldFrame(0)
+	_audioFrame(NULL)
 {
 	PHDEBUG << "Setting the decoder with a buffer of" << bufferSize << "frames";
 }
@@ -103,7 +104,7 @@ bool PhAVDecoder::open(QString fileName)
 		return false;
 	}
 
-	_videoFrame = avcodec_alloc_frame();
+	_videoFrame = av_frame_alloc();
 
 	_nextDecodingFrame = _firstFrame;
 
@@ -115,7 +116,7 @@ bool PhAVDecoder::open(QString fileName)
 				_audioStream = NULL;
 			}
 			else {
-				_audioFrame = avcodec_alloc_frame();
+				_audioFrame = av_frame_alloc();
 				PHDEBUG << "Audio OK.";
 			}
 		}
@@ -158,12 +159,12 @@ PhTimeCodeType PhAVDecoder::timeCodeType()
 	}
 }
 
-PhFrame PhAVDecoder::firstFrame()
+PhFrame PhAVDecoder::frameIn()
 {
 	return _firstFrame;
 }
 
-void PhAVDecoder::setFirstFrame(PhFrame frame)
+void PhAVDecoder::setFrameIn(PhFrame frame)
 {
 	PHDEBUG << frame;
 	_bufferMutex.lock();

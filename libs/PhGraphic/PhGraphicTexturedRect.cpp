@@ -294,7 +294,7 @@ void PhGraphicTexturedRect::setBilinearFiltering(bool bilinear)
 	}
 }
 
-bool PhGraphicTexturedRect::getBilinearFiltering()
+bool PhGraphicTexturedRect::bilinearFiltering()
 {
 	return _bilinearFiltering;
 }

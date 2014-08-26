@@ -27,8 +27,8 @@ extern "C" {
 #include <QMutex>
 
 #include "PhGraphic/PhGraphicTexturedRect.h"
-#include "PhTools/PhTime.h"
-#include "PhTools/PhTimeCode.h"
+#include "PhSync/PhTime.h"
+#include "PhSync/PhTimeCode.h"
 
 /**
  * @brief The PhAVDecoder class
@@ -64,15 +64,15 @@ public:
 	 */
 	PhTimeCodeType timeCodeType();
 	/**
-	 * @brief firstFrame
-	 * @return The first frame of the video
+	 * @brief The starting frame of the video
+	 * @return A frame value.
 	 */
-	PhFrame firstFrame();
+	PhFrame frameIn();
 	/**
-	 * @brief Set first frame
-	 * @param frame the new first frame
+	 * @brief Set starting frame of the video
+	 * @param frame A frame value
 	 */
-	void setFirstFrame(PhFrame frame);
+	void setFrameIn(PhFrame frame);
 
 	/**
 	 * @brief video width
@@ -113,10 +113,12 @@ public:
 	 * @param deinterlace True if deinterlace false otherwise
 	 */
 	void setDeinterlace(bool deinterlace);
+
 	/**
 	 * @brief buffer occupation
 	 * @return The buffer occupation
 	 */
+
 	int bufferOccupation();
 	/**
 	 * @brief getBuffer
@@ -189,6 +191,7 @@ private:
 	AVStream *_videoStream;
 	AVFrame * _videoFrame;
 	bool _deinterlace;
+	bool _bilinearFiltering;
 
 	AVStream *_audioStream;
 	AVFrame * _audioFrame;

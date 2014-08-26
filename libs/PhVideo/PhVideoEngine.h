@@ -32,7 +32,7 @@ public:
 	/**
 	 * @brief PhVideoEngine constructor
 	 */
-	explicit PhVideoEngine();
+	explicit PhVideoEngine(PhVideoSettings *settings);
 	~PhVideoEngine();
 
 	// Properties
@@ -64,9 +64,7 @@ public:
 	 * @brief Get the first frame of the video file
 	 * @return A frame value
 	 */
-	PhFrame frameIn() {
-		return _frameIn;
-	}
+	PhFrame frameIn();
 
 	/**
 	 * @brief Set first frame
@@ -79,7 +77,7 @@ public:
 	 * @return A time value
 	 */
 	PhTime timeIn() {
-		return _frameIn * PhTimeCode::timePerFrame(_tcType);
+		return frameIn() * PhTimeCode::timePerFrame(_tcType);
 	}
 
 	/**
@@ -93,7 +91,7 @@ public:
 	 * @return the last frame of the video file
 	 */
 	PhFrame frameOut() {
-		return _frameIn + frameLength() - 1;
+		return frameIn() + frameLength() - 1;
 	}
 
 	/**
@@ -166,9 +164,7 @@ public:
 	 * @brief Retrieve the video filtering
 	 * @return True if bilinear filtering is enabled
 	 */
-	bool getBilinearFiltering() {
-		return _bilinearFiltering;
-	}
+	bool bilinearFiltering();
 
 	/**
 	 * @brief Enable or disable the video bilinear filtering
@@ -217,11 +213,6 @@ private:
 	 */
 	int bufferOccupation();
 
-	/**
-	 * @brief Set the settings
-	 * @param settings
-	 */
-	void setSettings(PhVideoSettings *settings);
 public slots:
 	/**
 	 * @brief errorString
@@ -236,7 +227,6 @@ private:
 	PhTimeCodeType _tcType;
 	PhClock _clock;
 	PhFrame _oldFrame;
-	PhFrame _frameIn;
 
 	PhAVDecoder *_decoder;
 

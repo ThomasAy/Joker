@@ -98,7 +98,7 @@ public:
 	 * @brief Retrieve the texture filtering
 	 * @return True if bilinear filtering is enabled
 	 */
-	bool getBilinearFiltering();
+	bool bilinearFiltering();
 
 protected:
 

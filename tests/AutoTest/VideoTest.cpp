@@ -6,7 +6,6 @@
 #include <QAction>
 
 #include "PhTools/PhDebug.h"
-#include "PhTools/PhTime.h"
 #include "PhTools/PhPictureTools.h"
 #include "PhGraphic/PhGraphicView.h"
 #include "PhSync/PhTime.h"
@@ -15,9 +14,8 @@
 
 #define WAIT_TIME 40
 
-VideoTest::VideoTest()
+VideoTest::VideoTest() :_videoEngine(&_settings)
 {
-	_videoEngine.setSettings(&_settings);
 	_view.resize(64, 64);
 
 	connect(&_view, &PhGraphicView::paint, [&](int w, int h) {
@@ -66,14 +64,14 @@ void VideoTest::goToTest02() {
 	QVERIFY(_videoEngine.open("interlace_%03d.bmp") );
 
 	qDebug() << "set the frame";
-	_videoEngine.clock()->setFrame(100);
+	_videoEngine.clock()->setFrame(100, PhTimeCodeType25);
 
 	QTest::qWait(WAIT_TIME);
 
 
 	QVERIFY(QImage(_view.grabFrameBuffer()) == QImage("interlace_100.bmp"));
 
-	_videoEngine.clock()->setFrame(99);
+	_videoEngine.clock()->setFrame(99, PhTimeCodeType25);
 
 
 	PHDEBUG << "second paint";
@@ -82,7 +80,7 @@ void VideoTest::goToTest02() {
 	QVERIFY(QImage(_view.grabFrameBuffer()) == QImage("interlace_099.bmp"));
 
 	for(int i = 75; i >= 50; i--) {
-		_videoEngine.clock()->setFrame(i);
+		_videoEngine.clock()->setFrame(i, PhTimeCodeType25);
 
 		qDebug() << "Set frame :" << i;
 
@@ -113,7 +111,7 @@ void VideoTest::goToTest03() {
 	                               << 90 << 100 << 68 << 96 << 51 << 146 << 154
 	                               << 115 << 165 << 85 << 83 << 181 << 57 << 86 << 166;
 	foreach(int frame, list) {
-		_videoEngine.clock()->setFrame(frame);
+		_videoEngine.clock()->setFrame(frame, PhTimeCodeType25);
 
 		QTest::qWait(WAIT_TIME);
 		QString name = QString("interlace_%1.bmp").arg(frame, 3, 10, QChar('0'));

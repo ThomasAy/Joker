@@ -17,7 +17,6 @@ VideoTestWindow::VideoTestWindow(VideoTestSettings *settings)
 	_maxVideoRate(0)
 {
 	ui->setupUi(this);
-	_videoEngine.setSettings(settings);
 	ui->videoView->setGraphicSettings(settings);
 
 	_mediaPanelDialog.setClock(_videoEngine.timeCodeType(), _videoEngine.clock());
