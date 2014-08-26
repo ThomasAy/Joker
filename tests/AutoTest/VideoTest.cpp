@@ -29,7 +29,7 @@ void VideoTest::openMovieTest()
 	_videoEngine.close();
 }
 
-void VideoTest::goToTest()
+void VideoTest::goToTest01()
 {
 	QVERIFY(_videoEngine.open("interlace_%03d.bmp") );
 
@@ -54,7 +54,8 @@ void VideoTest::goToTest()
 	_videoEngine.close();
 }
 
-void VideoTest::goToTest02() {
+void VideoTest::goToTest02()
+{
 	QVERIFY(_videoEngine.open("interlace_%03d.bmp") );
 
 	qDebug() << "set the frame";
@@ -87,8 +88,8 @@ void VideoTest::goToTest02() {
 }
 
 // This "stress test" cue the video engine at different random location
-void VideoTest::goToTest03() {
-
+void VideoTest::goToTest03()
+{
 	//_videoEngine.setSettings(&_settings);
 	_view.show();
 
@@ -117,11 +118,8 @@ void VideoTest::goToTest03() {
 	_videoEngine.close();
 }
 
-void VideoTest::playTest() {
-
-	_view.show();
-
-
+void VideoTest::playTest()
+{
 	QVERIFY(_videoEngine.open("interlace_%03d.bmp") );
 
 	_view.updateGL();
@@ -181,7 +179,6 @@ void VideoTest::deinterlaceTest()
 	_videoEngine.setDeinterlace(false);
 	_view.updateGL();
 	QVERIFY(_view.renderPixmap(64, 64).toImage() == QImage("interlace_001.bmp"));
-
 }
 
 void VideoTest::saveBuffer(QString fileName) {
