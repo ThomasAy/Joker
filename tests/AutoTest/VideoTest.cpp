@@ -69,7 +69,7 @@ void VideoTest::goToTest02() {
 	QTest::qWait(WAIT_TIME);
 
 
-	QVERIFY(QImage(_view.grabFrameBuffer()) == QImage("interlace_100.bmp"));
+	QVERIFY(_view.renderPixmap(64, 64).toImage() == QImage("interlace_100.bmp"));
 
 	_videoEngine.clock()->setFrame(99, PhTimeCodeType25);
 
@@ -77,7 +77,7 @@ void VideoTest::goToTest02() {
 	PHDEBUG << "second paint";
 
 	QTest::qWait(WAIT_TIME);
-	QVERIFY(QImage(_view.grabFrameBuffer()) == QImage("interlace_099.bmp"));
+	QVERIFY(_view.renderPixmap(64, 64).toImage() == QImage("interlace_099.bmp"));
 
 	for(int i = 75; i >= 50; i--) {
 		_videoEngine.clock()->setFrame(i, PhTimeCodeType25);
@@ -86,7 +86,7 @@ void VideoTest::goToTest02() {
 
 		QTest::qWait(WAIT_TIME);
 		QString name = QString("interlace_%1.bmp").arg(i, 3, 10, QChar('0'));
-		QVERIFY2(QImage(_view.grabFrameBuffer()) == QImage(name), PHNQ(name));
+		QVERIFY2(_view.renderPixmap(64, 64).toImage() == QImage(name), PHNQ(name));
 	}
 
 	_videoEngine.close();
@@ -114,8 +114,10 @@ void VideoTest::goToTest03() {
 		_videoEngine.clock()->setFrame(frame, PhTimeCodeType25);
 
 		QTest::qWait(WAIT_TIME);
+		_view.updateGL();
+
 		QString name = QString("interlace_%1.bmp").arg(frame, 3, 10, QChar('0'));
-		QVERIFY2(QImage(_view.grabFrameBuffer()) == QImage(name), PHNQ(name));
+		QVERIFY2(_view.renderPixmap(64, 64).toImage() == QImage(name), PHNQ(name));
 	}
 
 	_videoEngine.close();
@@ -188,8 +190,7 @@ void VideoTest::deinterlaceTest() {
 }
 
 void VideoTest::saveBuffer(PhGraphicView * _view) {
-
-	QImage test(_view->grabFrameBuffer());
+	QImage test = _view->renderPixmap(64,64).toImage();
 	test.save("result.bmp");
 	system("open result.bmp");
 }

@@ -62,7 +62,10 @@ public:
 	 * @return The timeCodeType(), processed
 	 * with the video FPS
 	 */
-	PhTimeCodeType timeCodeType();
+	PhTimeCodeType timeCodeType() {
+		return _tcType;
+	}
+
 	/**
 	 * @brief The starting frame of the video
 	 * @return A frame value.
@@ -89,11 +92,6 @@ public:
 	 * @return the length of the video
 	 */
 	PhFrame length();
-	/**
-	 * @brief get frame per second
-	 * @return the FPS of the video file
-	 */
-	float framePerSecond();
 	/**
 	 * @brief Get the codec name
 	 * @return the codec name
@@ -157,7 +155,7 @@ public slots:
 	 *
 	 * Handle the frame change
 	 */
-	void onFrameChanged(PhFrame frame, PhTimeCodeType);
+	void onTimeChanged(PhTime time);
 	/**
 	 * @brief onRateChanged
 	 * @param rate
@@ -178,7 +176,8 @@ private:
 	QMap<PhFrame, uint8_t * > _bufferMap;
 	QMutex _bufferMutex;
 
-	PhFrame _firstFrame;
+	PhTimeCodeType _tcType;
+	PhFrame _frameIn;
 	/**
 	 * @brief The next frame that the decoder will process.
 	 */

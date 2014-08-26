@@ -39,14 +39,14 @@ bool PhVideoEngine::open(QString fileName)
 	// Setup the thread worker according to
 	// http://mayaposch.wordpress.com/2011/11/01/how-to-really-truly-use-qthreads-the-full-explanation/
 	_decoder->moveToThread(thread);
-	connect(_decoder, SIGNAL(error(QString)), this, SLOT(errorString(QString)));
-	connect(thread, SIGNAL(started()), _decoder, SLOT(process()));
-	connect(_decoder, SIGNAL(finished()), thread, SLOT(quit()));
-	connect(_decoder, SIGNAL(finished()), _decoder, SLOT(deleteLater()));
-	connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+	connect(_decoder, &PhAVDecoder::error, this, &PhVideoEngine::errorString);
+	connect(thread, &QThread::started, _decoder, &PhAVDecoder::process);
+	connect(_decoder, &PhAVDecoder::finished, thread, &QThread::quit);
+	connect(_decoder, &PhAVDecoder::finished, _decoder, &PhAVDecoder::deleteLater);
+	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
 
-	connect(&_clock, SIGNAL(frameChanged(PhFrame, PhTimeCodeType)), _decoder, SLOT(onFrameChanged(PhFrame, PhTimeCodeType)));
-	connect(&_clock, SIGNAL(rateChanged(PhRate)), _decoder, SLOT(onRateChanged(PhRate)));
+	connect(&_clock, &PhClock::timeChanged, _decoder, &PhAVDecoder::onTimeChanged);
+	connect(&_clock, &PhClock::rateChanged, _decoder, &PhAVDecoder::onRateChanged);
 
 	thread->start(QThread::LowestPriority);
 

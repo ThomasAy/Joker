@@ -16,7 +16,8 @@ PhAVDecoder::PhAVDecoder(int bufferSize, QObject *parent) :
 	_interupted(false),
 	_bufferSize(bufferSize),
 	_bufferFreeSpace(bufferSize),
-	_firstFrame(0),
+	_tcType(PhTimeCodeType25),
+	_frameIn(0),
 	_nextDecodingFrame(0),
 	_lastDecodedFrame(0),
 	_oldFrame(0),
@@ -51,7 +52,7 @@ bool PhAVDecoder::open(QString fileName)
 
 	av_dump_format(_pFormatContext, 0, fileName.toStdString().c_str(), 0);
 
-	_firstFrame = 0;
+	_frameIn = 0;
 	_videoStream = NULL;
 	_audioStream = NULL;
 
@@ -78,6 +79,19 @@ bool PhAVDecoder::open(QString fileName)
 	if(_videoStream == NULL)
 		return false;
 
+	// Reading timecode type
+	float fps = _videoStream->avg_frame_rate.num;
+	fps /= _videoStream->avg_frame_rate.den;
+	// See http://stackoverflow.com/a/570694/2307070
+	// for NaN handling
+	if(fps != fps) {
+		fps = _videoStream->time_base.den;
+		fps /= _videoStream->time_base.num;
+	}
+
+	PHDEBUG << "fps:" << fps;
+	_tcType = PhTimeCode::computeTimeCodeType(fps);
+
 	// Reading timestamp :
 	AVDictionaryEntry *tag = av_dict_get(_pFormatContext->metadata, "timecode", NULL, AV_DICT_IGNORE_SUFFIX);
 	if(tag == NULL)
@@ -85,11 +99,10 @@ bool PhAVDecoder::open(QString fileName)
 
 	if(tag) {
 		PHDEBUG << "Found timestamp:" << tag->value;
-		_firstFrame = PhTimeCode::frameFromString(tag->value, PhTimeCodeType25);
+		_frameIn = PhTimeCode::frameFromString(tag->value, _tcType);
 	}
 
 	PHDEBUG << "length:" << this->length();
-	PHDEBUG << "fps:" << this->framePerSecond();
 
 	PHDEBUG << "size : " << _videoStream->codec->width << "x" << _videoStream->codec->height;
 	AVCodec * videoCodec = avcodec_find_decoder(_videoStream->codec->codec_id);
@@ -106,7 +119,7 @@ bool PhAVDecoder::open(QString fileName)
 
 	_videoFrame = av_frame_alloc();
 
-	_nextDecodingFrame = _firstFrame;
+	_nextDecodingFrame = _frameIn;
 
 	if(_audioStream) {
 		AVCodec* audioCodec = avcodec_find_decoder(_audioStream->codec->codec_id);
@@ -135,33 +148,9 @@ void PhAVDecoder::close()
 	_interupted = true;
 }
 
-PhTimeCodeType PhAVDecoder::timeCodeType()
-{
-	// Looking for timecode type
-	float fps = framePerSecond();
-
-	if(fps == 0) {
-		PHDEBUG << "Bad fps detect => assuming 25";
-		return PhTimeCodeType25;
-	}
-	else if(fps < 24)
-		return PhTimeCodeType2398;
-	else if (fps < 24.5f)
-		return PhTimeCodeType24;
-	else if (fps < 26)
-		return PhTimeCodeType25;
-	else if (fps < 30)
-		return PhTimeCodeType2997;
-	else {
-#warning /// @todo patch for #107 => find better fps decoding
-		PHDEBUG << "Bad fps detect => assuming 25";
-		return PhTimeCodeType25;
-	}
-}
-
 PhFrame PhAVDecoder::frameIn()
 {
-	return _firstFrame;
+	return _frameIn;
 }
 
 void PhAVDecoder::setFrameIn(PhFrame frame)
@@ -169,7 +158,7 @@ void PhAVDecoder::setFrameIn(PhFrame frame)
 	PHDEBUG << frame;
 	_bufferMutex.lock();
 	clearBuffer();
-	_nextDecodingFrame = _firstFrame = frame;
+	_nextDecodingFrame = _frameIn = frame;
 	_bufferMutex.unlock();
 }
 
@@ -194,23 +183,6 @@ PhFrame PhAVDecoder::length()
 	if(_videoStream)
 		return time2frame(_videoStream->duration);
 	return 0;
-}
-
-float PhAVDecoder::framePerSecond()
-{
-	float fps = 0;
-	if(_videoStream) {
-		fps = _videoStream->avg_frame_rate.num;
-		fps /= _videoStream->avg_frame_rate.den;
-		// See http://stackoverflow.com/a/570694/2307070
-		// for NaN handling
-		if(fps != fps) {
-			fps = _videoStream->time_base.den;
-			fps /= _videoStream->time_base.num;
-		}
-	}
-
-	return fps;
 }
 
 QString PhAVDecoder::codecName()
@@ -294,7 +266,7 @@ void PhAVDecoder::decodeFrame(PhFrame frame)
 
 	if(frame - _lastDecodedFrame != 1) {
 		int flags = AVSEEK_FLAG_ANY;
-		int64_t timestamp = frame2time(frame - _firstFrame);
+		int64_t timestamp = frame2time(frame - _frameIn);
 		PHDEBUG << "seek:" << _direction << frame;
 		av_seek_frame(_pFormatContext, _videoStream->index, timestamp, flags);
 	}
@@ -388,8 +360,9 @@ void PhAVDecoder::onRateChanged(PhRate rate)
 	PHDEBUG << "Direction is now" <<_direction;
 }
 
-void PhAVDecoder::onFrameChanged(PhFrame frame, PhTimeCodeType)
+void PhAVDecoder::onTimeChanged(PhTime time)
 {
+	PhFrame frame = time / PhTimeCode::timePerFrame(_tcType);
 	_bufferMutex.lock();
 //	PHDBG(25) << "Want" << frame << _direction << "Have ("<<  _bufferMap.count() <<":" << _bufferFreeSpace.available() << "):" << _bufferMap.keys();
 	if(!_bufferMap.contains(frame))
