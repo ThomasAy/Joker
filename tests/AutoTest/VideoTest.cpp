@@ -18,6 +18,7 @@ VideoTest::VideoTest() : _videoEngine(&_settings),
 	_view(64, 64)
 {
 	connect(&_view, &PhGraphicView::paint, this, &VideoTest::paint);
+	_view.show();
 }
 
 void VideoTest::paint(int width, int height)
@@ -63,9 +64,7 @@ void VideoTest::goToTest02()
 	qDebug() << "set the frame";
 	_videoEngine.clock()->setFrame(100, PhTimeCodeType25);
 
-	QTest::qWait(WAIT_TIME);
-
-
+	QTest::qWait(FRAME_WAIT_TIME);
 	QVERIFY(_view.renderPixmap(64, 64).toImage() == QImage("interlace_100.bmp"));
 
 	_videoEngine.clock()->setFrame(99, PhTimeCodeType25);
@@ -73,7 +72,7 @@ void VideoTest::goToTest02()
 
 	PHDEBUG << "second paint";
 
-	QTest::qWait(WAIT_TIME);
+	QTest::qWait(FRAME_WAIT_TIME);
 	QVERIFY(_view.renderPixmap(64, 64).toImage() == QImage("interlace_099.bmp"));
 
 	for(int i = 75; i >= 50; i--) {
@@ -81,7 +80,7 @@ void VideoTest::goToTest02()
 
 		qDebug() << "Set frame :" << i;
 
-		QTest::qWait(WAIT_TIME);
+		QTest::qWait(FRAME_WAIT_TIME);
 		QString name = QString("interlace_%1.bmp").arg(i, 3, 10, QChar('0'));
 		QVERIFY2(_view.renderPixmap(64, 64).toImage() == QImage(name), PHNQ(name));
 	}
@@ -92,12 +91,6 @@ void VideoTest::goToTest02()
 // This "stress test" cue the video engine at different random location
 void VideoTest::goToTest03()
 {
-	//_videoEngine.setSettings(&_settings);
-	_view.show();
-
-	_videoEngine.clock()->setRate(0);
-
-
 	QVERIFY(_videoEngine.open("interlace_%03d.bmp") );
 
 	QList<int> list = QList<int>() << 183 << 25 << 71 << 59 << 158 << 8 << 137
@@ -110,9 +103,7 @@ void VideoTest::goToTest03()
 	foreach(int frame, list) {
 		_videoEngine.clock()->setFrame(frame, PhTimeCodeType25);
 
-		QTest::qWait(WAIT_TIME);
-		_view.updateGL();
-
+		QTest::qWait(FRAME_WAIT_TIME);
 		QString name = QString("interlace_%1.bmp").arg(frame, 3, 10, QChar('0'));
 		QVERIFY2(_view.renderPixmap(64, 64).toImage() == QImage(name), PHNQ(name));
 	}
