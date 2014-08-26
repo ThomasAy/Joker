@@ -14,7 +14,8 @@
 
 #define WAIT_TIME 40
 
-VideoTest::VideoTest() :_videoEngine(&_settings)
+VideoTest::VideoTest() : _videoEngine(&_settings),
+	_view(64, 64)
 {
 	_view.resize(64, 64);
 

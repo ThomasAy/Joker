@@ -20,7 +20,7 @@ class VideoTest : public QObject
 {
 	Q_OBJECT
 public:
-	VideoTest();
+	explicit VideoTest();
 
 protected slots:
 	//void paint(int width, int height);
@@ -42,6 +42,7 @@ private:
 	void saveBuffer(PhGraphicView *view);
 #warning /// @todo move to a generic graphicTest implementation
 	void findMatch(QImage source);
+	void saveBuffer(QString fileName);
 };
 
 #endif // VIDEOTEST_H
