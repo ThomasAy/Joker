@@ -3,25 +3,14 @@
 
 #include <QDir>
 
-#include "PhTools/PhGenericSettings.h"
-#include "PhVideo/PhVideoSettings.h"
-#include "PhSync/PhSyncSettings.h"
-#include "PhCommonUI/PhDocumentWindowSettings.h"
+#include "PhSony/PhSonySettings.h"
+#include "../VideoTest/VideoTestSettings.h"
 
-class VideoSyncTestSettings : PhGenericSettings,
-	public PhVideoSettings,
-	public PhSyncSettings,
-	public PhDocumentWindowSettings
+class VideoSyncTestSettings : public VideoTestSettings,
+	public PhSonySettings
 {
 public:
-	PH_SETTING_INT(setScreenDelay, screenDelay)
-
-	PH_SETTING_BOOL(setResetInfo, resetInfo)
-	PH_SETTING_INT2(setVideoBufferSize, videoBufferSize, 100)
-
-	// PhVideoSettings :
-
-	// PhSyncSettings:
+	// PhSonySettings:
 	PH_SETTING_BOOL2(setVideoSyncUp, videoSyncUp, true)
 	PH_SETTING_UCHAR2(setSonyDevice1, sonyDevice1, 0xF0)
 	PH_SETTING_UCHAR2(setSonyDevice2, sonyDevice2, 0xC0)
