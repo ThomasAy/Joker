@@ -32,4 +32,3 @@ sudo apt-get install doxygen uncrustify
 
 sudo pip install cpp-coveralls
 fi
-

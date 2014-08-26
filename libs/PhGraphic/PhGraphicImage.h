@@ -49,12 +49,12 @@ public:
 	 */
 	QSize originalSize() const;
 
+protected:
 	/**
 	 * @brief Initialize the image texture
 	 */
 	bool init();
 
-protected:
 	/**
 	 * @brief Dispose the image texture
 	 */

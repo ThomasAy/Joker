@@ -1,7 +1,7 @@
 #include "VideoSyncTestWindow.h"
 
 VideoSyncTestWindow::VideoSyncTestWindow(VideoSyncTestSettings *settings)
-	: VideoTestWindow(NULL),
+	: VideoTestWindow(settings),
 	_settings(settings)
 {
 }

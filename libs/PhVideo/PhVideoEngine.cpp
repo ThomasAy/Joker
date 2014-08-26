@@ -6,14 +6,13 @@
 
 #include "PhVideoEngine.h"
 
-PhVideoEngine::PhVideoEngine(PhVideoSettings *settings) :  QObject(NULL),
+PhVideoEngine::PhVideoEngine(PhVideoSettings *settings) :
 	_settings(settings),
 	_fileName("")
 {
 	PHDEBUG << "Using FFMpeg widget for video playback.";
 	av_register_all();
 	avcodec_register_all();
-
 }
 
 bool PhVideoEngine::open(QString fileName)

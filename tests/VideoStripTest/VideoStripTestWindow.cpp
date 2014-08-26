@@ -13,7 +13,7 @@ VideoStripTestWindow::VideoStripTestWindow(VideoStripTestSettings *settings) :
 	_settings(settings),
 	_strip(settings),
 	_doc(_strip.doc()),
-	_videoEngine()
+	_videoEngine(settings)
 {
 	ui->setupUi(this);
 
@@ -23,8 +23,6 @@ VideoStripTestWindow::VideoStripTestWindow(VideoStripTestSettings *settings) :
 
 	connect(ui->videoStripView, &PhGraphicView::beforePaint, _strip.clock(), &PhClock::tick);
 	connect(ui->videoStripView, &PhGraphicView::paint, this, &VideoStripTestWindow::onPaint);
-
-	_videoEngine.setSettings(_settings);
 }
 
 VideoStripTestWindow::~VideoStripTestWindow()

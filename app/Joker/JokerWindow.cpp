@@ -27,7 +27,7 @@ JokerWindow::JokerWindow(JokerSettings *settings) :
 	ui(new Ui::JokerWindow),
 	_settings(settings),
 	_strip(settings),
-	_videoEngine(),
+	_videoEngine(settings),
 	_doc(_strip.doc()),
 	_sonySlave(PhTimeCodeType25, settings),
 	_mtcReader(PhTimeCodeType25),
@@ -117,7 +117,6 @@ JokerWindow::JokerWindow(JokerSettings *settings) :
 	this->connect(ui->videoStripView, &PhGraphicView::paint, this, &JokerWindow::onPaint);
 
 	_videoLogo.setFilename(QCoreApplication::applicationDirPath() + PATH_TO_RESSOURCES + "/phonations.png");
-	_videoEngine.setSettings(settings);
 }
 
 JokerWindow::~JokerWindow()
