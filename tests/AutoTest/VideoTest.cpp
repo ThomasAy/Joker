@@ -17,13 +17,12 @@
 VideoTest::VideoTest() : _videoEngine(&_settings),
 	_view(64, 64)
 {
-	_view.resize(64, 64);
+	connect(&_view, &PhGraphicView::paint, this, &VideoTest::paint);
+}
 
-	connect(&_view, &PhGraphicView::paint, [&](int w, int h) {
-	            glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-	            glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	            _videoEngine.drawVideo(0, 0, w, h);
-			});
+void VideoTest::paint(int width, int height)
+{
+	_videoEngine.drawVideo(0, 0, width, height);
 }
 
 void VideoTest::openMovieTest()
@@ -190,10 +189,10 @@ void VideoTest::deinterlaceTest() {
 
 }
 
-void VideoTest::saveBuffer(PhGraphicView * _view) {
-	QImage test = _view->renderPixmap(64,64).toImage();
-	test.save("result.bmp");
-	system("open result.bmp");
+void VideoTest::saveBuffer(QString fileName) {
+	QImage test = _view.renderPixmap(64,64).toImage();
+	test.save(fileName);
+	system(PHNQ(QString("open %0").arg(fileName)));
 }
 
 void VideoTest::findMatch(QImage source) {

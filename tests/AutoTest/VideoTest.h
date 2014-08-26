@@ -23,7 +23,7 @@ public:
 	explicit VideoTest();
 
 protected slots:
-	//void paint(int width, int height);
+	void paint(int width, int height);
 
 private slots:
 
@@ -39,10 +39,8 @@ private:
 	PhGraphicView _view;
 
 #warning /// @todo move to a generic graphicTest implementation
-	void saveBuffer(PhGraphicView *view);
-#warning /// @todo move to a generic graphicTest implementation
-	void findMatch(QImage source);
 	void saveBuffer(QString fileName);
+	void findMatch(QImage source);
 };
 
 #endif // VIDEOTEST_H
