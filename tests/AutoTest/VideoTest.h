@@ -11,8 +11,6 @@
 #include "PhGraphic/PhGraphicView.h"
 
 #include "PhVideo/PhVideoEngine.h"
-#include "PhGraphic/PhGraphicView.h"
-
 #include "VideoTestSettings.h"
 
 
@@ -30,9 +28,9 @@ private slots:
 	void openMovieTest();
 	void goToTest01();
 	void goToTest02();
+	void goToTest03();
 	void playTest();
 	void deinterlaceTest();
-	void goToTest03();
 private:
 	VideoTestSettings _settings;
 	PhVideoEngine _videoEngine;
