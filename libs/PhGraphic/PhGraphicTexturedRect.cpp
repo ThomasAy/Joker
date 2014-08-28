@@ -277,7 +277,7 @@ void PhGraphicTexturedRect::setRepeat(bool repeat)
 	}
 }
 
-bool PhGraphicTexturedRect::getRepeat()
+bool PhGraphicTexturedRect::repeat()
 {
 	return _repeat;
 }

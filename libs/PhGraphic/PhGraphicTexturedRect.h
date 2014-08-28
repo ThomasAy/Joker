@@ -85,7 +85,7 @@ public:
 	 * @brief Retrieve the texture repetition
 	 * @return True if repetition is enabled
 	 */
-	bool getRepeat();
+	bool repeat();
 
 	/**
 	 * @brief Enable or disable the texture bilinear filtering
