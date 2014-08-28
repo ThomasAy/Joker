@@ -286,7 +286,7 @@ QString PhVideoEngine::codecName()
 	return "";
 }
 
-void PhVideoEngine::goToFrame(PhFrame frame)
+void PhVideoEngine::decodeFrame(PhFrame frame)
 {
 	// Exit if the frame is already in the buffer
 	_bufferMutex.lock();
@@ -427,7 +427,7 @@ void PhVideoEngine::process()
 		}
 //		QTime t;
 //		t.start();
-		goToFrame(_nextDecodingFrame);
+		decodeFrame(_nextDecodingFrame);
 //		PHDEBUG << t.elapsed() << "ms to decode the frame" << _nextDecodingFrame;
 		switch (_direction) {
 		case 1:
