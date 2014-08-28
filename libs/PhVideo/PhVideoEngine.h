@@ -195,9 +195,7 @@ public:
 	 * @brief Retrieve the video filtering
 	 * @return True if bilinear filtering is enabled
 	 */
-	bool bilinearFiltering() {
-		return _videoRect.bilinearFiltering();
-	}
+	bool bilinearFiltering();
 
 	/**
 	 * @brief Enable or disable the video bilinear filtering

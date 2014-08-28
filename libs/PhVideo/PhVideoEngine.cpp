@@ -14,7 +14,7 @@ PhVideoEngine::PhVideoEngine(PhVideoSettings *settings) :
 	_pFormatContext(NULL),
 	_videoStream(NULL),
 	_videoFrame(NULL),
-	_currentFrame(0),
+	_currentFrame(PHFRAMEMIN),
 	_useAudio(false),
 	_audioStream(NULL),
 	_audioFrame(NULL),
@@ -58,6 +58,11 @@ void PhVideoEngine::setDeinterlace(bool deinterlace)
 	_currentFrame = PHFRAMEMIN;
 }
 
+bool PhVideoEngine::bilinearFiltering()
+{
+	return _videoRect.bilinearFiltering();
+}
+
 void PhVideoEngine::setBilinearFiltering(bool bilinear)
 {
 	_videoRect.setBilinearFiltering(bilinear);
@@ -70,7 +75,7 @@ bool PhVideoEngine::open(QString fileName)
 
 	_clock.setTime(0);
 	_clock.setRate(0);
-	_currentFrame = _currentFrame = PHFRAMEMIN;
+	_currentFrame = PHFRAMEMIN;
 
 	if(avformat_open_input(&_pFormatContext, fileName.toStdString().c_str(), NULL, NULL) < 0)
 		return false;
@@ -134,6 +139,7 @@ bool PhVideoEngine::open(QString fileName)
 	_videoFrame = av_frame_alloc();
 
 	PHDEBUG << "length:" << this->frameLength();
+	PHDEBUG << "fps:" << this->framePerSecond();
 
 	_nextDecodingFrame = _frameIn;
 
@@ -179,8 +185,6 @@ void PhVideoEngine::close()
 		if(_audioStream)
 			avcodec_close(_audioStream->codec);
 		avformat_close_input(&_pFormatContext);
-
-		PHDEBUG << _fileName << "closed";
 	}
 	_frameIn = _nextDecodingFrame = 0;
 	_pFormatContext = NULL;
