@@ -43,6 +43,7 @@ class PhVideoEngine : public QObject
 public:
 	/**
 	 * @brief PhVideoEngine constructor
+	 * @param settings The settings
 	 */
 	explicit PhVideoEngine(PhVideoSettings *settings);
 	~PhVideoEngine();

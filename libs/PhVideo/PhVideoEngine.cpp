@@ -65,9 +65,8 @@ void PhVideoEngine::setBilinearFiltering(bool bilinear)
 
 bool PhVideoEngine::open(QString fileName)
 {
+	close();
 	PHDEBUG << fileName;
-
-	this->close();
 
 	_clock.setTime(0);
 	_clock.setRate(0);
@@ -82,7 +81,7 @@ bool PhVideoEngine::open(QString fileName)
 
 	av_dump_format(_pFormatContext, 0, fileName.toStdString().c_str(), 0);
 
-	// Find video stream
+	// Find video stream :
 	for(int i = 0; i < (int)_pFormatContext->nb_streams; i++) {
 		AVMediaType streamType = _pFormatContext->streams[i]->codec->codec_type;
 		PHDEBUG << i << ":" << streamType;
@@ -132,7 +131,9 @@ bool PhVideoEngine::open(QString fileName)
 		return false;
 	}
 
-	PHDEBUG << "length:" << this->length();
+	_videoFrame = av_frame_alloc();
+
+	PHDEBUG << "length:" << this->frameLength();
 
 	_nextDecodingFrame = _frameIn;
 
@@ -218,12 +219,12 @@ void PhVideoEngine::drawVideo(int x, int y, int w, int h)
 	}
 }
 
-void PhVideoEngine::setFrameIn(PhFrame frame)
+void PhVideoEngine::setFrameIn(PhFrame frameIn)
 {
-	PHDEBUG << frame;
+	PHDEBUG << frameIn;
 	_bufferMutex.lock();
 	clearBuffer();
-	_nextDecodingFrame = _frameIn = frame;
+	_nextDecodingFrame = _frameIn = frameIn;
 	_bufferMutex.unlock();
 }
 
@@ -265,17 +266,17 @@ int PhVideoEngine::height()
 
 float PhVideoEngine::framePerSecond()
 {
-	float fps = 0;
+	float result = 0;
 	if(_videoStream) {
-		fps = _videoStream->avg_frame_rate.num / _videoStream->avg_frame_rate.den;
+		result = _videoStream->avg_frame_rate.num / _videoStream->avg_frame_rate.den;
 		// See http://stackoverflow.com/a/570694/2307070
 		// for NaN handling
-		if(fps != fps) {
-			fps = _videoStream->time_base.den;
-			fps /= _videoStream->time_base.num;
+		if(result != result) {
+			result = _videoStream->time_base.den;
+			result /= _videoStream->time_base.num;
 		}
 	}
-	return fps;
+	return result;
 }
 
 QString PhVideoEngine::codecName()
@@ -386,7 +387,7 @@ int64_t PhVideoEngine::frame2time(PhFrame f)
 {
 	int64_t t = 0;
 	if(_videoStream) {
-		PhFrame fps = PhTimeCode::getFps(timeCodeType());
+		PhFrame fps = PhTimeCode::getFps(_tcType);
 		t = f * _videoStream->time_base.den / _videoStream->time_base.num / fps;
 	}
 	return t;
@@ -396,7 +397,7 @@ PhFrame PhVideoEngine::time2frame(int64_t t)
 {
 	PhFrame f = 0;
 	if(_videoStream) {
-		PhFrame fps = PhTimeCode::getFps(timeCodeType());
+		PhFrame fps = PhTimeCode::getFps(_tcType);
 		f = t * _videoStream->time_base.num * fps / _videoStream->time_base.den;
 	}
 	return f;
@@ -413,8 +414,6 @@ void PhVideoEngine::clearBuffer()
 void PhVideoEngine::process()
 {
 	PHDEBUG;
-
-	_videoFrame = av_frame_alloc();
 
 	while(_isProcessing) {
 		QCoreApplication::processEvents(QEventLoop::AllEvents, 1);
