@@ -76,7 +76,9 @@ public:
 	 * @brief Get the first frame of the video file
 	 * @return A frame value
 	 */
-	PhFrame frameIn();
+	PhFrame frameIn() {
+		return _frameIn;
+	}
 
 	/**
 	 * @brief Set first frame
@@ -89,7 +91,7 @@ public:
 	 * @return A time value
 	 */
 	PhTime timeIn() {
-		return frameIn() * PhTimeCode::timePerFrame(_tcType);
+		return _frameIn * PhTimeCode::timePerFrame(_tcType);
 	}
 
 	/**
@@ -103,7 +105,7 @@ public:
 	 * @return the last frame of the video file
 	 */
 	PhFrame frameOut() {
-		return frameIn() + frameLength() - 1;
+		return _frameIn + frameLength() - 1;
 	}
 
 	/**
@@ -130,7 +132,7 @@ public:
 	 * @brief Get the codec name
 	 * @return the codec name
 	 */
-	float framePerSecond();
+	QString codecName();
 	/**
 	 * @brief Get the width
 	 * @return the PhVideoEngine width (not necessary the video width)
@@ -145,7 +147,14 @@ public:
 	 * @brief Get the codec name
 	 * @return the codec name
 	 */
-	QString codecName();
+	float framePerSecond();
+	/**
+	 * @brief refreshRate
+	 * @return the refreshRate
+	 */
+	int refreshRate() {
+		return _videoFrameCounter.frequency();
+	}
 
 	// Methods
 	/**
@@ -161,10 +170,17 @@ public:
 	 */
 	void close();
 	/**
+	 * @brief Prompt if the PhVideoEngine is ready
+	 * @return True if the PhVideoEngine is ready, false otherwise
+	 */
+	bool ready();
+	/**
 	 * @brief Check if video shall be deinterlace
 	 * @return True if deinterlace false otherwise
 	 */
-	bool deinterlace();
+	bool deinterlace() {
+		return _deinterlace;
+	}
 
 	/**
 	 * @brief Set the video deinterlace mode
@@ -194,13 +210,6 @@ public:
 	 */
 	void drawVideo(int x, int y, int w, int h);
 
-	/**
-	 * @brief refreshRate
-	 * @return the refreshRate
-	 */
-	int refreshRate() {
-		return _frameCounter.frequency();
-	}
 signals:
 	/**
 	 * @brief Signal sent upon a different timecode type message
@@ -225,6 +234,9 @@ private slots:
 	void onRateChanged(PhRate rate);
 
 private:
+	void decodeFrame(PhFrame frame);
+	void clearBuffer();
+
 	/**
 	 * @brief Give the buffer address of a specified frame
 	 * @param A frame value.
@@ -246,18 +258,14 @@ private:
 
 	int64_t frame2time(PhFrame f);
 	PhFrame time2frame(int64_t t);
-	void decodeFrame(PhFrame frame);
-	void clearBuffer();
 
 	PhVideoSettings *_settings;
 	QString _fileName;
 	PhTimeCodeType _tcType;
-	PhFrame _frameIn;
 	PhClock _clock;
+	PhFrame _frameIn;
 	PhFrame _oldFrame;
 
-	PhGraphicTexturedRect _videoRect;
-	PhTickCounter _frameCounter;
 
 	QThread _processingThread;
 	bool _isProcessing;
@@ -276,11 +284,14 @@ private:
 	AVFormatContext * _pFormatContext;
 	AVStream *_videoStream;
 	AVFrame * _videoFrame;
-	bool _deinterlace;
-	bool _bilinearFiltering;
+	PhGraphicTexturedRect _videoRect;
+	PhTickCounter _videoFrameCounter;
 
 	AVStream *_audioStream;
 	AVFrame * _audioFrame;
+
+	bool _deinterlace;
+	bool _bilinearFiltering;
 };
 
 #endif // PHVIDEOENGINE_H

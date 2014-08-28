@@ -21,10 +21,10 @@ PhVideoEngine::PhVideoEngine(PhVideoSettings *settings) :
 	_pFormatContext(NULL),
 	_videoStream(NULL),
 	_videoFrame(NULL),
-	_deinterlace(false),
-	_bilinearFiltering(true),
 	_audioStream(NULL),
-	_audioFrame(NULL)
+	_audioFrame(NULL),
+	_deinterlace(false),
+	_bilinearFiltering(true)
 {
 	PHDEBUG << "Using FFMpeg widget for video playback.";
 	av_register_all();
@@ -167,6 +167,11 @@ void PhVideoEngine::close()
 	_fileName = "";
 }
 
+bool PhVideoEngine::ready()
+{
+	return (_pFormatContext && _videoStream && _videoFrame);
+}
+
 void PhVideoEngine::setDeinterlace(bool deinterlace)
 {
 	PHDEBUG << deinterlace;
@@ -207,7 +212,7 @@ void PhVideoEngine::drawVideo(int x, int y, int w, int h)
 //				PHDEBUG << frame << _deinterlace;
 				_videoRect.createTextureFromRGBBuffer(buffer, this->width(), height);
 				_oldFrame = frame;
-				_frameCounter.tick();
+				_videoFrameCounter.tick();
 			}
 			else
 				PHDEBUG << "No buffer";
@@ -477,11 +482,6 @@ void PhVideoEngine::setTimeIn(PhTime timeIn)
 PhVideoEngine::~PhVideoEngine()
 {
 	close();
-}
-
-PhFrame PhVideoEngine::frameIn()
-{
-	return _frameIn;
 }
 
 PhFrame PhVideoEngine::frameLength()
