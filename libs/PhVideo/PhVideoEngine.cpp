@@ -206,7 +206,7 @@ void PhVideoEngine::drawVideo(int x, int y, int w, int h)
 				int height = this->height();
 				if(_deinterlace)
 					height = height / 2;
-				_videoRect.createTextureFromRGBBuffer(buffer, this->width(), height);
+				_videoRect.createTextureFromBGRABuffer(buffer, this->width(), height);
 				_currentFrame = frame;
 				_videoFrameTickCounter.tick();
 			}
@@ -319,7 +319,7 @@ bool PhVideoEngine::decodeFrame(PhFrame frame)
 
 						int frameHeight = _videoFrame->height;
 						if(_deinterlace)
-							frameHeight /= 2;
+							frameHeight = _videoFrame->height / 2;
 						// As the following formats are deprecated (see https://libav.org/doxygen/master/pixfmt_8h.html#a9a8e335cf3be472042bc9f0cf80cd4c5)
 						// we replace its with the new ones recommended by LibAv
 						// in order to get ride of the warnings
@@ -340,21 +340,22 @@ bool PhVideoEngine::decodeFrame(PhFrame frame)
 							pixFormat = _videoStream->codec->pix_fmt;
 							break;
 						}
+						/* Note: we output the frames in AV_PIX_FMT_BGRA rather than AV_PIX_FMT_RGB24,
+						 * because this format is native to most video cards and will avoid a conversion
+						 * in the video driver */
 						SwsContext * swsContext = sws_getContext(_videoFrame->width, _videoFrame->height, pixFormat,
-						                                         _videoFrame->width, frameHeight, AV_PIX_FMT_RGB24,
+						                                         _videoFrame->width, frameHeight, AV_PIX_FMT_BGRA,
 						                                         SWS_POINT, NULL, NULL, NULL);
 
-						uint8_t * rgb = new uint8_t[_videoFrame->width * frameHeight * 3];
-						int linesize = _videoFrame->width * 3;
+						uint8_t * rgb = new uint8_t[avpicture_get_size(AV_PIX_FMT_BGRA, _videoFrame->width, frameHeight)];
+						int linesize = _videoFrame->width * 4;
 						if (0 <= sws_scale(swsContext, (const uint8_t * const *) _videoFrame->data,
-						                   _videoFrame->linesize, 0, _videoFrame->height, &rgb,
+						                   _videoFrame->linesize, 0, _videoStream->codec->height, &rgb,
 						                   &linesize)) {
 							_bufferMutex.lock();
 							_bufferMap[frame] = rgb;
-							//PHDBG(25) << "Decoding" << PhTimeCode::stringFromFrame(frame, PhTimeCodeType25) << packet.dts << _bufferFreeSpace.available();
 							_bufferMutex.unlock();
 							_lastDecodedFrame = frame;
-							//PHDEBUG << "Add" << frame;
 							result = true;
 						}
 					} // if frame decode is not finished, let's read another packet.
@@ -362,9 +363,6 @@ bool PhVideoEngine::decodeFrame(PhFrame frame)
 				else if(_audioStream && (packet.stream_index == _audioStream->index)) {
 					int ok = 0;
 					avcodec_decode_audio4(_audioStream->codec, _audioFrame, &ok, &packet);
-					//				if(ok) {
-					//					PHDEBUG << "audio:" << _audioFrame->nb_samples;
-					//				}
 				}
 				break;
 			case AVERROR_EOF:
@@ -375,7 +373,7 @@ bool PhVideoEngine::decodeFrame(PhFrame frame)
 				{
 					char errorStr[256];
 					av_strerror(error, errorStr, 256);
-					PHDEBUG << "error on frame" << frame << ":" << errorStr;
+					PHDEBUG << frame << "error:" << errorStr;
 					// In order to get out of the while in case of error
 					frameFinished = -1;
 					break;
