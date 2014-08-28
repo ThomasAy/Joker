@@ -47,7 +47,6 @@ void VideoTest::goToTest01()
 	QVERIFY(_videoEngine.open("interlace_%03d.bmp") );
 
 	QTest::qWait(FRAME_WAIT_TIME);
-
 	QVERIFY(_view.renderPixmap(64, 64).toImage() == QImage("interlace_000.bmp"));
 
 	_videoEngine.clock()->setFrame(20, PhTimeCodeType25);
@@ -161,7 +160,6 @@ void VideoTest::playTest()
 
 void VideoTest::deinterlaceTest()
 {
-	_videoEngine.clock()->setFrame(0, PhTimeCodeType25);
 	//Open the video file in interlaced mode
 	_videoEngine.open("interlace_%03d.bmp");
 	QTest::qWait(FRAME_WAIT_TIME);
