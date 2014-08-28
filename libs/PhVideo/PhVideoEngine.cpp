@@ -309,75 +309,77 @@ bool PhVideoEngine::decodeFrame(PhFrame frame)
 	int frameFinished = 0;
 	while(frameFinished == 0) {
 		AVPacket packet;
-		int error = av_read_frame(_pFormatContext, &packet);
-		switch(error) {
-		case 0:
-			if(packet.stream_index == _videoStream->index) {
-				avcodec_decode_video2(_videoStream->codec, _videoFrame, &frameFinished, &packet);
-				if(frameFinished) {
+		{
+			int error = av_read_frame(_pFormatContext, &packet);
+			switch(error) {
+			case 0:
+				if(packet.stream_index == _videoStream->index) {
+					avcodec_decode_video2(_videoStream->codec, _videoFrame, &frameFinished, &packet);
+					if(frameFinished) {
 
-					int frameHeight = _videoFrame->height;
-					if(_deinterlace)
-						frameHeight /= 2;
-					// As the following formats are deprecated (see https://libav.org/doxygen/master/pixfmt_8h.html#a9a8e335cf3be472042bc9f0cf80cd4c5)
-					// we replace its with the new ones recommended by LibAv
-					// in order to get ride of the warnings
-					AVPixelFormat pixFormat;
-					switch (_videoStream->codec->pix_fmt) {
-					case AV_PIX_FMT_YUVJ420P:
-						pixFormat = AV_PIX_FMT_YUV420P;
-						break;
-					case AV_PIX_FMT_YUVJ422P:
-						pixFormat = AV_PIX_FMT_YUV422P;
-						break;
-					case AV_PIX_FMT_YUVJ444P:
-						pixFormat = AV_PIX_FMT_YUV444P;
-						break;
-					case AV_PIX_FMT_YUVJ440P:
-						pixFormat = AV_PIX_FMT_YUV440P;
-					default:
-						pixFormat = _videoStream->codec->pix_fmt;
-						break;
-					}
-					SwsContext * swsContext = sws_getContext(_videoFrame->width, _videoFrame->height, pixFormat,
-					                                         _videoFrame->width, frameHeight, AV_PIX_FMT_RGB24,
-					                                         SWS_POINT, NULL, NULL, NULL);
+						int frameHeight = _videoFrame->height;
+						if(_deinterlace)
+							frameHeight /= 2;
+						// As the following formats are deprecated (see https://libav.org/doxygen/master/pixfmt_8h.html#a9a8e335cf3be472042bc9f0cf80cd4c5)
+						// we replace its with the new ones recommended by LibAv
+						// in order to get ride of the warnings
+						AVPixelFormat pixFormat;
+						switch (_videoStream->codec->pix_fmt) {
+						case AV_PIX_FMT_YUVJ420P:
+							pixFormat = AV_PIX_FMT_YUV420P;
+							break;
+						case AV_PIX_FMT_YUVJ422P:
+							pixFormat = AV_PIX_FMT_YUV422P;
+							break;
+						case AV_PIX_FMT_YUVJ444P:
+							pixFormat = AV_PIX_FMT_YUV444P;
+							break;
+						case AV_PIX_FMT_YUVJ440P:
+							pixFormat = AV_PIX_FMT_YUV440P;
+						default:
+							pixFormat = _videoStream->codec->pix_fmt;
+							break;
+						}
+						SwsContext * swsContext = sws_getContext(_videoFrame->width, _videoFrame->height, pixFormat,
+						                                         _videoFrame->width, frameHeight, AV_PIX_FMT_RGB24,
+						                                         SWS_POINT, NULL, NULL, NULL);
 
-					uint8_t * rgb = new uint8_t[_videoFrame->width * frameHeight * 3];
-					int linesize = _videoFrame->width * 3;
-					if (0 <= sws_scale(swsContext, (const uint8_t * const *) _videoFrame->data,
-					                   _videoFrame->linesize, 0, _videoFrame->height, &rgb,
-					                   &linesize)) {
-						_bufferMutex.lock();
-						_bufferMap[frame] = rgb;
-						//PHDBG(25) << "Decoding" << PhTimeCode::stringFromFrame(frame, PhTimeCodeType25) << packet.dts << _bufferFreeSpace.available();
-						_bufferMutex.unlock();
-						_lastDecodedFrame = frame;
-						//PHDEBUG << "Add" << frame;
-						result = true;
-					}
-				}     // if frame decode is not finished, let's read another packet.
-			}
-			else if(_audioStream && (packet.stream_index == _audioStream->index)) {
-				int ok = 0;
-				avcodec_decode_audio4(_audioStream->codec, _audioFrame, &ok, &packet);
-				//				if(ok) {
-				//					PHDEBUG << "audio:" << _audioFrame->nb_samples;
-				//				}
-			}
-			break;
-		case AVERROR_EOF:
-			// As we reach the end of the file, it's useless to go full speed
-			QThread::msleep(10);
-		case AVERROR_INVALIDDATA:
-		default:
-			{
-				char errorStr[256];
-				av_strerror(error, errorStr, 256);
-				PHDEBUG << "error on frame" << frame << ":" << errorStr;
-				// In order to get out of the while in case of error
-				frameFinished = -1;
+						uint8_t * rgb = new uint8_t[_videoFrame->width * frameHeight * 3];
+						int linesize = _videoFrame->width * 3;
+						if (0 <= sws_scale(swsContext, (const uint8_t * const *) _videoFrame->data,
+						                   _videoFrame->linesize, 0, _videoFrame->height, &rgb,
+						                   &linesize)) {
+							_bufferMutex.lock();
+							_bufferMap[frame] = rgb;
+							//PHDBG(25) << "Decoding" << PhTimeCode::stringFromFrame(frame, PhTimeCodeType25) << packet.dts << _bufferFreeSpace.available();
+							_bufferMutex.unlock();
+							_lastDecodedFrame = frame;
+							//PHDEBUG << "Add" << frame;
+							result = true;
+						}
+					} // if frame decode is not finished, let's read another packet.
+				}
+				else if(_audioStream && (packet.stream_index == _audioStream->index)) {
+					int ok = 0;
+					avcodec_decode_audio4(_audioStream->codec, _audioFrame, &ok, &packet);
+					//				if(ok) {
+					//					PHDEBUG << "audio:" << _audioFrame->nb_samples;
+					//				}
+				}
 				break;
+			case AVERROR_EOF:
+				// As we reach the end of the file, it's useless to go full speed
+				QThread::msleep(10);
+			case AVERROR_INVALIDDATA:
+			default:
+				{
+					char errorStr[256];
+					av_strerror(error, errorStr, 256);
+					PHDEBUG << "error on frame" << frame << ":" << errorStr;
+					// In order to get out of the while in case of error
+					frameFinished = -1;
+					break;
+				}
 			}
 		}
 		//Avoid memory leak
