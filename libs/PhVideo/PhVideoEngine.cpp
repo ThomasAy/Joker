@@ -19,7 +19,6 @@ PhVideoEngine::PhVideoEngine(PhVideoSettings *settings) :
 	_audioStream(NULL),
 	_audioFrame(NULL),
 	_deinterlace(false),
-	_bilinearFiltering(true),
 	_isProcessing(false),
 	_bufferSize(settings->videoBufferSize()),
 	_bufferFreeSpace(settings->videoBufferSize()),
@@ -141,8 +140,6 @@ bool PhVideoEngine::open(QString fileName)
 	PHDEBUG << "length:" << this->frameLength();
 	PHDEBUG << "fps:" << this->framePerSecond();
 
-	_nextDecodingFrame = _frameIn;
-
 	if(_audioStream) {
 		AVCodec* audioCodec = avcodec_find_decoder(_audioStream->codec->codec_id);
 		if(audioCodec) {
@@ -160,6 +157,8 @@ bool PhVideoEngine::open(QString fileName)
 			_audioStream = NULL;
 		}
 	}
+
+	_nextDecodingFrame = _frameIn;
 	_fileName = fileName;
 
 	_isProcessing = true;
@@ -198,18 +197,15 @@ void PhVideoEngine::close()
 void PhVideoEngine::drawVideo(int x, int y, int w, int h)
 {
 	if(_videoStream) {
-		PhFrame frame = _clock.frame(_tcType);
-		if(_settings)
-			frame += _settings->screenDelay() * PhTimeCode::getFps(_tcType) * _clock.rate() / 1000;
+		PhFrame delay = _settings->screenDelay() * PhTimeCode::getFps(_tcType) * _clock.rate() / 1000;
+		PhFrame frame = _clock.frame(_tcType) + delay;
 
-//		PHDEBUG << frame << _oldFrame;
 		if(frame != _currentFrame) {
 			uint8_t *buffer = getBuffer(frame);
 			if(buffer) {
 				int height = this->height();
 				if(_deinterlace)
 					height = height / 2;
-//				PHDEBUG << frame << _deinterlace;
 				_videoRect.createTextureFromRGBBuffer(buffer, this->width(), height);
 				_currentFrame = frame;
 				_videoFrameTickCounter.tick();
@@ -217,10 +213,10 @@ void PhVideoEngine::drawVideo(int x, int y, int w, int h)
 			else
 				PHDEBUG << "No buffer";
 		}
-		_videoRect.setRect(x, y, w, h);
-		_videoRect.setZ(-10);
-		_videoRect.draw();
 	}
+	_videoRect.setRect(x, y, w, h);
+	_videoRect.setZ(-10);
+	_videoRect.draw();
 }
 
 void PhVideoEngine::setFrameIn(PhFrame frameIn)

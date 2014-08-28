@@ -280,7 +280,6 @@ private:
 	AVFrame * _audioFrame;
 
 	bool _deinterlace;
-	bool _bilinearFiltering;
 
 	QThread _processingThread;
 	bool _isProcessing;
