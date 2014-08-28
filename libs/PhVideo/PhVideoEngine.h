@@ -7,6 +7,20 @@
 #ifndef PHVIDEOENGINE_H
 #define PHVIDEOENGINE_H
 
+extern "C" {
+#ifndef INT64_C
+/** see http://code.google.com/p/ffmpegsource/issues/detail?id=11#c13 */
+#define INT64_C(c) (c ## LL)
+/** and http://code.google.com/p/ffmpegsource/issues/detail?id=11#c23 */
+#define UINT64_C(c) (c ## ULL)
+#endif
+
+#include <libavformat/avformat.h>
+#include <libavutil/avutil.h>
+#include <libavcodec/avcodec.h>
+#include <libswscale/swscale.h>
+}
+
 #include <QObject>
 #include <QElapsedTimer>
 #include <QSemaphore>
@@ -17,8 +31,6 @@
 #include "PhGraphic/PhGraphicTexturedRect.h"
 
 #include "PhVideoSettings.h"
-
-#include "PhAVDecoder.h"
 
 /**
  * @brief The video engine
@@ -196,10 +208,29 @@ signals:
 	 */
 	void timeCodeTypeChanged(PhTimeCodeType tcType);
 
+private slots:
+	/**
+	 * @brief The video processing is done here
+	 */
+	void process();
+	/**
+	 * @brief Handle the time change
+	 * @param A time value
+	 */
+	void onTimeChanged(PhTime time);
+	/**
+	 * @brief Handle the rate change
+	 * @param A rate value
+	 */
+	void onRateChanged(PhRate rate);
+
 private:
-	bool goToFrame(PhFrame frame);
-	int64_t frame2time(PhFrame f);
-	PhFrame time2frame(int64_t t);
+	/**
+	 * @brief Give the buffer address of a specified frame
+	 * @param A frame value.
+	 * @return A buffer address.
+	 */
+	uint8_t* getBuffer(PhFrame frame);
 
 	/**
 	 * @brief The buffer size
@@ -213,25 +244,43 @@ private:
 	 */
 	int bufferOccupation();
 
-public slots:
-	/**
-	 * @brief errorString
-	 *
-	 * For slot worker compatibility
-	 */
-	void errorString(QString);
+	int64_t frame2time(PhFrame f);
+	PhFrame time2frame(int64_t t);
+	void decodeFrame(PhFrame frame);
+	void clearBuffer();
 
-private:
 	PhVideoSettings *_settings;
 	QString _fileName;
 	PhTimeCodeType _tcType;
+	PhFrame _frameIn;
 	PhClock _clock;
 	PhFrame _oldFrame;
 
-	PhAVDecoder *_decoder;
-
 	PhGraphicTexturedRect _videoRect;
 	PhTickCounter _frameCounter;
+
+	QThread _processingThread;
+	bool _isProcessing;
+	int _bufferSize;
+	QSemaphore _bufferFreeSpace;
+	QMap<PhFrame, uint8_t * > _bufferMap;
+	QMutex _bufferMutex;
+
+	/**
+	 * @brief The next frame that the decoder will process.
+	 */
+	PhFrame _nextDecodingFrame;
+	PhFrame _lastDecodedFrame;
+	int _direction;
+
+	AVFormatContext * _pFormatContext;
+	AVStream *_videoStream;
+	AVFrame * _videoFrame;
+	bool _deinterlace;
+	bool _bilinearFiltering;
+
+	AVStream *_audioStream;
+	AVFrame * _audioFrame;
 };
 
 #endif // PHVIDEOENGINE_H

@@ -5,11 +5,9 @@
 
 HEADERS += \
     ../../libs/PhVideo/PhVideoEngine.h \
-    ../../libs/PhVideo/PhVideoSettings.h \
-    ../../libs/PhVideo/PhAVDecoder.h
+    ../../libs/PhVideo/PhVideoSettings.h
 SOURCES += \
-    ../../libs/PhVideo/PhVideoEngine.cpp \
-    ../../libs/PhVideo/PhAVDecoder.cpp
+    ../../libs/PhVideo/PhVideoEngine.cpp
 
 # Windows specific
 win32{
