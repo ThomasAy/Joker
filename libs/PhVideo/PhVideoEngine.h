@@ -144,16 +144,16 @@ public:
 	 */
 	int height();
 	/**
-	 * @brief Get the codec name
-	 * @return the codec name
+	 * @brief Get average number of frame per second
+	 * @return A float value.
 	 */
 	float framePerSecond();
 	/**
-	 * @brief refreshRate
-	 * @return the refreshRate
+	 * @brief Get refreshRate
+	 * @return Return the refresh rate of the PhVideoEngine
 	 */
 	int refreshRate() {
-		return _videoFrameCounter.frequency();
+		return _videoFrameTickCounter.frequency();
 	}
 
 	// Methods
@@ -174,6 +174,7 @@ public:
 	 * @return True if the PhVideoEngine is ready, false otherwise
 	 */
 	bool ready();
+
 	/**
 	 * @brief Check if video shall be deinterlace
 	 * @return True if deinterlace false otherwise
@@ -192,7 +193,9 @@ public:
 	 * @brief Retrieve the video filtering
 	 * @return True if bilinear filtering is enabled
 	 */
-	bool bilinearFiltering();
+	bool bilinearFiltering() {
+		return _videoRect.bilinearFiltering();
+	}
 
 	/**
 	 * @brief Enable or disable the video bilinear filtering
@@ -234,7 +237,7 @@ private slots:
 	void onRateChanged(PhRate rate);
 
 private:
-	void decodeFrame(PhFrame frame);
+	void goToFrame(PhFrame frame);
 	void clearBuffer();
 
 	/**
@@ -285,8 +288,9 @@ private:
 	AVStream *_videoStream;
 	AVFrame * _videoFrame;
 	PhGraphicTexturedRect _videoRect;
-	PhTickCounter _videoFrameCounter;
+	PhTickCounter _videoFrameTickCounter;
 
+	bool _useAudio;
 	AVStream *_audioStream;
 	AVFrame * _audioFrame;
 
