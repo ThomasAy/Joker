@@ -286,7 +286,7 @@ QString PhVideoEngine::codecName()
 	return "";
 }
 
-void PhVideoEngine::decodeFrame(PhFrame frame)
+bool PhVideoEngine::decodeFrame(PhFrame frame)
 {
 	// Exit if the frame is already in the buffer
 	_bufferMutex.lock();
@@ -294,7 +294,7 @@ void PhVideoEngine::decodeFrame(PhFrame frame)
 		_bufferMutex.unlock();
 		//Release the unused ressource
 		_bufferFreeSpace.release();
-		return;
+		return true;
 	}
 	_bufferMutex.unlock();
 
@@ -305,6 +305,7 @@ void PhVideoEngine::decodeFrame(PhFrame frame)
 		av_seek_frame(_pFormatContext, _videoStream->index, timestamp, flags);
 	}
 
+	bool result = false;
 	int frameFinished = 0;
 	while(frameFinished == 0) {
 		AVPacket packet;
@@ -353,6 +354,7 @@ void PhVideoEngine::decodeFrame(PhFrame frame)
 						_bufferMutex.unlock();
 						_lastDecodedFrame = frame;
 						//PHDEBUG << "Add" << frame;
+						result = true;
 					}
 				}     // if frame decode is not finished, let's read another packet.
 			}
@@ -381,6 +383,8 @@ void PhVideoEngine::decodeFrame(PhFrame frame)
 		//Avoid memory leak
 		av_free_packet(&packet);
 	}
+
+	return result;
 }
 
 int64_t PhVideoEngine::frame2time(PhFrame f)

@@ -237,7 +237,7 @@ private slots:
 	void onRateChanged(PhRate rate);
 
 private:
-	void decodeFrame(PhFrame frame);
+	bool decodeFrame(PhFrame frame);
 	void clearBuffer();
 
 	/**
