@@ -46,6 +46,7 @@ public:
 	 * @param settings The settings
 	 */
 	explicit PhVideoEngine(PhVideoSettings *settings);
+
 	~PhVideoEngine();
 
 	// Properties
@@ -268,8 +269,20 @@ private:
 	PhTimeCodeType _tcType;
 	PhClock _clock;
 	PhFrame _frameIn;
-	PhFrame _oldFrame;
 
+	AVFormatContext * _pFormatContext;
+	AVStream *_videoStream;
+	AVFrame * _videoFrame;
+	PhGraphicTexturedRect _videoRect;
+	PhFrame _currentFrame;
+	PhTickCounter _videoFrameTickCounter;
+
+	bool _useAudio;
+	AVStream *_audioStream;
+	AVFrame * _audioFrame;
+
+	bool _deinterlace;
+	bool _bilinearFiltering;
 
 	QThread _processingThread;
 	bool _isProcessing;
@@ -284,19 +297,6 @@ private:
 	PhFrame _nextDecodingFrame;
 	PhFrame _lastDecodedFrame;
 	int _direction;
-
-	AVFormatContext * _pFormatContext;
-	AVStream *_videoStream;
-	AVFrame * _videoFrame;
-	PhGraphicTexturedRect _videoRect;
-	PhTickCounter _videoFrameTickCounter;
-
-	bool _useAudio;
-	AVStream *_audioStream;
-	AVFrame * _audioFrame;
-
-	bool _deinterlace;
-	bool _bilinearFiltering;
 };
 
 #endif // PHVIDEOENGINE_H

@@ -11,21 +11,21 @@ PhVideoEngine::PhVideoEngine(PhVideoSettings *settings) :
 	_fileName(""),
 	_tcType(PhTimeCodeType25),
 	_frameIn(0),
-	_oldFrame(0),
+	_pFormatContext(NULL),
+	_videoStream(NULL),
+	_videoFrame(NULL),
+	_currentFrame(0),
+	_useAudio(false),
+	_audioStream(NULL),
+	_audioFrame(NULL),
+	_deinterlace(false),
+	_bilinearFiltering(true),
 	_isProcessing(false),
 	_bufferSize(settings->videoBufferSize()),
 	_bufferFreeSpace(settings->videoBufferSize()),
 	_nextDecodingFrame(0),
 	_lastDecodedFrame(0),
-	_direction(0),
-	_pFormatContext(NULL),
-	_videoStream(NULL),
-	_videoFrame(NULL),
-	_useAudio(false),
-	_audioStream(NULL),
-	_audioFrame(NULL),
-	_deinterlace(false),
-	_bilinearFiltering(true)
+	_direction(0)
 {
 	PHDEBUG << "Using FFMpeg widget for video playback.";
 	av_register_all();
@@ -52,10 +52,10 @@ void PhVideoEngine::setDeinterlace(bool deinterlace)
 		_deinterlace = deinterlace;
 		_bufferMutex.lock();
 		clearBuffer();
-		_nextDecodingFrame = _oldFrame;
+		_nextDecodingFrame = _currentFrame;
 		_bufferMutex.unlock();
 	}
-	_oldFrame = PHFRAMEMIN;
+	_currentFrame = PHFRAMEMIN;
 }
 
 void PhVideoEngine::setBilinearFiltering(bool bilinear)
@@ -70,7 +70,7 @@ bool PhVideoEngine::open(QString fileName)
 
 	_clock.setTime(0);
 	_clock.setRate(0);
-	_oldFrame = _oldFrame = PHFRAMEMIN;
+	_currentFrame = _currentFrame = PHFRAMEMIN;
 
 	if(avformat_open_input(&_pFormatContext, fileName.toStdString().c_str(), NULL, NULL) < 0)
 		return false;
@@ -199,7 +199,7 @@ void PhVideoEngine::drawVideo(int x, int y, int w, int h)
 			frame += _settings->screenDelay() * PhTimeCode::getFps(_tcType) * _clock.rate() / 1000;
 
 //		PHDEBUG << frame << _oldFrame;
-		if(frame != _oldFrame) {
+		if(frame != _currentFrame) {
 			uint8_t *buffer = getBuffer(frame);
 			if(buffer) {
 				int height = this->height();
@@ -207,7 +207,7 @@ void PhVideoEngine::drawVideo(int x, int y, int w, int h)
 					height = height / 2;
 //				PHDEBUG << frame << _deinterlace;
 				_videoRect.createTextureFromRGBBuffer(buffer, this->width(), height);
-				_oldFrame = frame;
+				_currentFrame = frame;
 				_videoFrameTickCounter.tick();
 			}
 			else
@@ -487,7 +487,6 @@ void PhVideoEngine::onTimeChanged(PhTime time)
 			_nextDecodingFrame = frame;
 		}
 	}
-	PHDEBUG << _oldFrame << frame;
 //	PHDEBUG << "Should decode:" << _nextDecodingFrame << "Have ("<<  _bufferMap.count() <<":" << _bufferFreeSpace.available() << "):" << _bufferMap.keys();
 	_bufferMutex.unlock();
 }
