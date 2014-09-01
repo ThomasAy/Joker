@@ -102,8 +102,8 @@ void GraphicTextTest::computeMaxFontSizeTest()
 {
 	PhGraphicView view;
 
-	QCOMPARE(PhFont::computeMaxFontSize("Arial.ttf"), 113);
-	QCOMPARE(PhFont::computeMaxFontSize("SWENSON.ttf"), 124);
-	QCOMPARE(PhFont::computeMaxFontSize("Bedizen.ttf"), 97);
-	QCOMPARE(PhFont::computeMaxFontSize("weblysleekuil.ttf"), 94);
+	QCOMPARE(PhFont::computeMaxFontSize("Arial.ttf"), 106);
+	QCOMPARE(PhFont::computeMaxFontSize("SWENSON.ttf"), 117);
+	QCOMPARE(PhFont::computeMaxFontSize("Bedizen.ttf"), 90);
+	QCOMPARE(PhFont::computeMaxFontSize("weblysleekuil.ttf"), 89);
 }
