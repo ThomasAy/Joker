@@ -82,6 +82,8 @@ void GraphicTextTest::fontTest() {
 	resultImage.save(imageFileNameTemplate.arg("result"));
 	QImage expectedImage(expectedFile);
 
+	QVERIFY(QImage(imageFileNameTemplate.arg("result")) == expectedImage);
+
 	int result = PhPictureTools::compare(resultImage, expectedImage);
 	PHDEBUG << result;
 	QVERIFY2(result < 776 * 576 / 50, PHNQ(expectedFile)); // accept a difference of 1 per 4 pixels
