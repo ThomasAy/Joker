@@ -114,26 +114,31 @@ bool PhFont::init()
 						max = maxy;
 					// First render the glyph to a surface
 					SDL_Surface * glyphSurface = TTF_RenderGlyph_Blended(font, charCode, color);
-					if (!glyphSurface)
+					if (glyphSurface) {
+						SDL_Rect glyphRect;
+						glyphRect.x = (charIndex % 16) * space;
+						glyphRect.y = (charIndex / 16) * space;
+						glyphRect.w = glyphSurface->w;
+						glyphRect.h = glyphSurface->h;
+						if(glyphRect.h > _glyphHeight)
+							_glyphHeight = glyphRect.h;
+						//PHDEBUG << ch << (char) ch << minx << maxx << miny << maxy << advance << _glyphHeight;
+						// Then blit it to the matrix
+						SDL_BlitSurface( glyphSurface, NULL, matrixSurface, &glyphRect );
+
+						// Store information about the glyph
+						_glyphAdvance[charIndex] = advance;
+					}
+					else {
+						_glyphAdvance[charIndex] = 0;
 						PHDEBUG << "Error during the Render Glyph of " << (char) charIndex << SDL_GetError();
-					SDL_Rect glyphRect;
-					glyphRect.x = (charIndex % 16) * space;
-					glyphRect.y = (charIndex / 16) * space;
-					glyphRect.w = glyphSurface->w;
-					glyphRect.h = glyphSurface->h - 4;
-					if(glyphRect.h > _glyphHeight)
-						_glyphHeight = glyphRect.h;
-					//PHDEBUG << ch << (char) ch << minx << maxx << miny << maxy << advance << _glyphHeight;
-					// Then blit it to the matrix
-					SDL_BlitSurface( glyphSurface, NULL, matrixSurface, &glyphRect );
-
-					// Store information about the glyph
-					_glyphAdvance[charIndex] = advance;
-
+					}
 					SDL_FreeSurface(glyphSurface);
 				}
-				else
+				else {
 					PHDEBUG <<" Error with Glyph of char:" << charIndex << (char) charIndex << minx << maxx << miny << maxy << advance;
+					_glyphAdvance[charIndex] = 0;
+				}
 			}
 			else
 				_glyphAdvance[charIndex] = 0;

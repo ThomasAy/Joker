@@ -15,10 +15,11 @@
 #include "PhCommonUI/PhDocumentWindow.h"
 #include <PhVideo/PhVideoEngine.h>
 #include <PhGraphicStrip/PhGraphicStrip.h>
-#include "PhSync/PhSonySlaveController.h"
-#include "PhSync/PhLtcReader.h"
+#include "PhSync/PhSynchronizer.h"
+#include "PhSony/PhSonySlaveController.h"
+#include "PhLtc/PhLtcReader.h"
+#include "PhMidi/PhMidiTimeCodeReader.h"
 
-#include "Synchronizer.h"
 #include "PropertyDialog.h"
 #include "JokerSettings.h"
 #include "RulerSpaceDialog.h"
@@ -247,7 +248,9 @@ private:
 	PhVideoEngine _videoEngine;
 	PhStripDoc *_doc;
 	PhSonySlaveController _sonySlave;
-	Synchronizer _synchronizer;
+	PhLtcReader _ltcReader;
+	PhMidiTimeCodeReader _mtcReader;
+	PhSynchronizer _synchronizer;
 
 	PhFloatingMediaPanel _mediaPanel;
 	QTimer _mediaPanelTimer;
@@ -256,7 +259,6 @@ private:
 
 	PropertyDialog _propertyDialog;
 
-	PhLtcReader _ltcReader;
 	bool _firstDoc;
 	bool _resizingStrip;
 	int _numberOfDraw;
