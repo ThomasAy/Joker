@@ -51,6 +51,8 @@ void PhGraphicLoop::draw()
 		int hcs = _crossSize / 2; // half cross size
 		int ht = _thickness / 3; // half thickness;
 
+		PHDEBUG << _thickness % 3 << _crossSize % 2 << this->height() % 2;
+
 		// draw the fist cross segment
 		glVertex3i(x - hcs + ht, y - hcs - ht, z);
 		glVertex3i(x - hcs - ht, y - hcs + ht, z);
